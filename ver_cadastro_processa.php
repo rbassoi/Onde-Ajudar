@@ -81,7 +81,7 @@ if(empty($encaminhamento)) { //verificando se o campo login está vazio, campo o
 
 try {
 //Inserindo os dados selecionados no formulário, e a data-time do cadastro no banco de dados
-    $sql_inserir = $conn->prepare("INSERT INTO u672441645_mor.abordagem (id_morador, data_abordagem, cidade, bairro, endereco, tempo_cidade, tempo_ficar, aceitou_encaminhamento, tipo_encaminhamento, tipo_curso, porta_objetos, objetos, relato, local_abordagem, condicao_ambiente, limpeza_ambiente, complemento, responsavel_abordagem) VALUES (:id, NOW(), :cidade, :bairro, :rua, :tempocidade, :tempoficar, :encaminhamento, :tipoencaminhamento, :tipocurso, :portaobjetos, :objetos, :relato, :localabordagem, :condicaoambiente, :limpezaambiente, :complemento, :responsavelabordagem)");
+    $sql_inserir = $conn->prepare("INSERT INTO abordagem (id_morador, data_abordagem, cidade, bairro, endereco, tempo_cidade, tempo_ficar, aceitou_encaminhamento, tipo_encaminhamento, tipo_curso, porta_objetos, objetos, relato, local_abordagem, condicao_ambiente, limpeza_ambiente, complemento, responsavel_abordagem) VALUES (:id, NOW(), :cidade, :bairro, :rua, :tempocidade, :tempoficar, :encaminhamento, :tipoencaminhamento, :tipocurso, :portaobjetos, :objetos, :relato, :localabordagem, :condicaoambiente, :limpezaambiente, :complemento, :responsavelabordagem)");
     
     $sql_inserir->bindParam( ':id', $id );
     $sql_inserir->bindParam( ':cidade', $cidade );
@@ -106,7 +106,8 @@ try {
     if ($sql_inserir->rowCount() > 0) {
     
       
-    $sql_altera_cor = $conn->prepare("UPDATE u672441645_mor.abordagem SET cor=:cor WHERE u672441645_mor.abordagem.id_morador = $id");
+    $sql_altera_cor = $conn->prepare("UPDATE abordagem SET cor=:cor WHERE id_morador = :idmorador");
+    $sql_altera_cor->bindValue(':idmorador', $id, PDO::PARAM_INT);
 
     $sql_altera_cor->bindParam( ':cor', $cor );
     $sql_altera_cor->execute();
@@ -121,7 +122,7 @@ try {
 
   } 
 
-  catch(PDOException $_SESSION) {
+  catch(PDOException $e) {
 
       $_SESSION['msg_registro'] = '<div class="alert alert-danger alert-dismissable">
                       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>

@@ -1,123 +1,175 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-	  <meta charset="utf-8">
-	  <meta name="viewport" content="width=device-width, initial-scale=1">
-	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-	  <!-- Bootstrap CSS -->
-		        <link href="estilos/css/bootstrap.min.css" rel="stylesheet">
-		    <!-- Estilos CSS personalizados dessa pagina -->
-		        <link rel="stylesheet" type="text/css" href="estilos/css/cadastro.css">
-		    <!-- Script  jquery local -->
-		        <script src="estilos/js/jquery-3.3.1.min.js"></script>
-</head>
-<body>
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="#">Moradores de Rua</a>
+<?php
+session_start();
+
+if (!isset($_SESSION['id_usuario'])) {
+    header('Location: login.php');
+    exit;
+}
+
+require_once('conexao.php');
+
+$estados_list = $conn->query("SELECT id, estado FROM estados ORDER BY estado")->fetchAll();
+$cidades_list = $conn->query("SELECT id, cidade FROM cidade  ORDER BY cidade")->fetchAll();
+$escolaris    = $conn->query("SELECT id, escolaridade FROM cadastro_escolaridade ORDER BY id")->fetchAll();
+
+$page_title = 'Novo Cadastro — Moradores de Rua';
+include 'includes/header.php';
+?>
+
+<div class="page-header">
+    <div class="container">
+        <h1>Novo Cadastro</h1>
+        <p class="sub">Registro de morador em situação de rua</p>
     </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Page 1 <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Page 1-1</a></li>
-            <li><a href="#">Page 1-2</a></li>
-            <li><a href="#">Page 1-3</a></li>
-          </ul>
-        </li>
-        <li><a href="#">Page 2</a></li>
-        <li><a href="#">Page 3</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-      </ul>
+</div>
+
+<div class="container-sm" style="padding-top:20px;padding-bottom:60px">
+
+<?php if (isset($_SESSION['msg_registro'])): ?>
+    <div class="alert alert-<?= strpos($_SESSION['msg_registro'],'sucesso')!==false?'success':'danger' ?> mb-3" data-dismiss="auto">
+        <?= $_SESSION['msg_registro'] ?>
     </div>
-  </div>
-</nav>
+    <?php unset($_SESSION['msg_registro']); ?>
+<?php endif; ?>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<p><span class="glyphicon glyphicon-copy"></span> Cadastro de Vítimas e Agressores  </p>
-	</div>
-		<div class="panel-body">
-		
+<div class="card">
+    <form method="post" action="cad_processa.php" data-validate>
 
-<br/>
-<!-- Painel de exibição do formulário-->
-			<div class="panel panel-default">
-					<div class="panel-body">
+        <!-- Identificação -->
+        <div class="form-group">
+            <label class="form-label">Nome completo <span style="color:var(--danger)">*</span></label>
+            <input type="text" name="nome" class="form-control" required placeholder="Nome do morador">
+        </div>
 
-						<h3>Cadastro de Moradores</h3>
-						
-						<br/>
-						<div class="form-group" class="form1" >
-									<label> * Nome:</label>
-										<input type="text" name="nome" class="form-control" placeholder="Digite o nome..." />
-								</div>
-								<div class="form-inline">
-									<div class="form-group">
-										<label> RG:</label><br/>
-											<input type="text" name="rg" class="form-control" placeholder="Digite número RG..." />
-									</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<div class="form-group">
-										<label> * CPF:</label><br/>
-											<input type="text" name="cpf" class="form-control" placeholder="Digite número CPF..." />
-									</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<div class="form-group" class="form1">
-										<label for="datanascimento">Data nascimento:</label><br/>
-											<input type="date" name="datanascimento" class="form-control"  />
-									</div>
-								</div><br/>
-								<div class="form-inline">
-									
-								</div><br/>
-								<div class="form-inline">	
-									<div class="form-group" class="form1">
-										<label for="deficiencia"> * Possui Alguma Deficiência:</label><br/>
-										<input type="checkbox" name="deficiencia[]"  value="1"> Não Possui deficiência <br/>
-										<input type="checkbox" name="deficiencia[]"  value="2"> Cadeirante <br/>
-										<input type="checkbox" name="deficiencia[]"  value="3"> Amputado <br/>
-										<input type="checkbox" name="deficiencia[]"  value="4"> Outro <br/>
-										<input type="text" name="deficiencia[]" placeholder="Digite qual o tipo de deficiência..." />
-									</div><br/><br/>
-									<div class="form-group" class="form1" >
-										<label> * Cidade e Estado de procedência:</label>
-											<input type="text" name="procedencia" class="form-control" placeholder="Ex: Florianópolis/SC..." />
-									</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<div class="form-group" class="form1" >
-										<label> * Tempo em Florianópolis:</label>
-											<input type="text" name="tempo" class="form-control" placeholder="Ex: 2 Semanas; 5 Meses; 8 Anos ..." />
-									</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<br/><br/>
-									<div class="form-group" class="form1">
-											<label for="sitrua">Nível de Risco à Vítima:</label><br/>
-											<input type="radio" name="sitrua"  value="1"/> Sim <br/>
-											<input type="radio" name="sitrua"  value="2"/> Não 
-									</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<div class="form-group" class="form1">
-											<label for="passagem">Passagem Criminal:</label><br/>
-											<input type="radio" name="passagem"  value="1"/> Sim <br/>
-											<input type="radio" name="passagem"  value="2"/> Não 
-									</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<div class="form-group" class="form1" >
-										<label> * Tipo de Passagem:</label>
-											<input type="text" name="passagemt" class="form-control" placeholder="Se SIM na opção anterior ..." />
-									</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					</div>	
-			</div>
-		</div>
-</div>	
-</body>
-</html>
+        <div class="grid-2 mb-2">
+            <div class="form-group">
+                <label class="form-label">RG</label>
+                <input type="text" name="rg" class="form-control" placeholder="Número do RG">
+            </div>
+            <div class="form-group">
+                <label class="form-label">CPF <span style="color:var(--danger)">*</span></label>
+                <input type="text" name="cpf" class="form-control" required placeholder="000.000.000-00">
+            </div>
+        </div>
+
+        <div class="grid-2 mb-2">
+            <div class="form-group">
+                <label class="form-label">Data de Nascimento <span style="color:var(--danger)">*</span></label>
+                <input type="date" name="datanascimento" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sexo</label>
+                <select name="sexo" class="form-control">
+                    <option value="">Selecione...</option>
+                    <option value="1">Masculino</option>
+                    <option value="2">Feminino</option>
+                    <option value="3">Outro</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Origem -->
+        <div class="grid-2 mb-2">
+            <div class="form-group">
+                <label class="form-label">Estado de origem</label>
+                <select name="estado" class="form-control">
+                    <option value="">Selecione...</option>
+                    <?php foreach ($estados_list as $e): ?>
+                    <option value="<?= (int)$e['id'] ?>"><?= htmlspecialchars($e['estado']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Cidade de origem</label>
+                <select name="cidade" class="form-control">
+                    <option value="">Selecione...</option>
+                    <?php foreach ($cidades_list as $c): ?>
+                    <option value="<?= (int)$c['id'] ?>"><?= htmlspecialchars($c['cidade']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group mb-2">
+            <label class="form-label">Escolaridade</label>
+            <select name="escolaridade" class="form-control">
+                <option value="">Selecione...</option>
+                <?php foreach ($escolaris as $es): ?>
+                <option value="<?= (int)$es['id'] ?>"><?= htmlspecialchars($es['escolaridade']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <!-- Situação -->
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start" class="mb-2">
+            <div class="form-group">
+                <label class="form-label">Situação de rua</label>
+                <div style="display:flex;gap:16px;padding-top:8px">
+                    <label><input type="radio" name="situacaorua" value="1"> Sim</label>
+                    <label><input type="radio" name="situacaorua" value="2" checked> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Motivo</label>
+                <input type="text" name="motivorua" class="form-control" placeholder="Motivo de estar na rua">
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start" class="mb-2">
+            <div class="form-group">
+                <label class="form-label">Uso de álcool/drogas</label>
+                <div style="display:flex;gap:16px;padding-top:8px">
+                    <label><input type="radio" name="usuario" value="1"> Sim</label>
+                    <label><input type="radio" name="usuario" value="2" checked> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Dependente de</label>
+                <input type="text" name="tipousuario" class="form-control" placeholder="Substância(s)">
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start" class="mb-2">
+            <div class="form-group">
+                <label class="form-label">Deficiência</label>
+                <div style="display:flex;gap:16px;padding-top:8px">
+                    <label><input type="radio" name="deficiencia" value="1"> Sim</label>
+                    <label><input type="radio" name="deficiencia" value="2" checked> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tipo de deficiência</label>
+                <input type="text" name="tipodeficiencia" class="form-control" placeholder="Descreva o tipo">
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start" class="mb-2">
+            <div class="form-group">
+                <label class="form-label">Passagem criminal</label>
+                <div style="display:flex;gap:16px;padding-top:8px">
+                    <label><input type="radio" name="passagem" value="1"> Sim</label>
+                    <label><input type="radio" name="passagem" value="2" checked> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tipo de passagem</label>
+                <input type="text" name="tipopassagem" class="form-control" placeholder="Tipo de passagem criminal">
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="form-label">Dados complementares</label>
+            <textarea name="complemento" class="form-control" rows="3" placeholder="Informações adicionais..."></textarea>
+        </div>
+
+        <div class="flex gap-2">
+            <a href="index.php" class="btn btn-ghost">← Cancelar</a>
+            <button type="submit" class="btn btn-primary">💾 Cadastrar morador</button>
+        </div>
+
+    </form>
+</div>
+
+</div>
+
+<?php include 'includes/footer.php'; ?>

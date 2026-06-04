@@ -87,13 +87,13 @@ require_once("conexao.php");
   										<strong>Você esqueceu do campo cidade!</strong>
   										</div>';
 			
-			header("Location: cad_editar.php?id=$id.php");
+			header("Location: cad_editar.php?id=$id");
 			
    } else {
 
 try {	
 		
-		$sql_edita = $conn->prepare("UPDATE u672441645_mor.cadastro SET nome=:nome, rg=:rg, cpf=:cpf, situacao=:situacao, data_nascimento=:datanascimento, estado=:estado, cidade=:cidade, escolaridade=:escolaridade, situacao_rua=:situacaorua,  motivo=:b, deficiencia=:deficiencia, tipo_deficiencia=:tipodeficiencia, usuario=:usuario, tipo_usuario=:tipousuario,  passagem=:passagem, tipo_passagem=:tipopassagem, complemento=:complemento WHERE u672441645_mor.cadastro.id=:id ");
+		$sql_edita = $conn->prepare("UPDATE cadastro SET nome=:nome, rg=:rg, cpf=:cpf, situacao=:situacao, data_nascimento=:datanascimento, estado=:estado, cidade=:cidade, escolaridade=:escolaridade, situacao_rua=:situacaorua, motivo=:b, deficiencia=:deficiencia, tipo_deficiencia=:tipodeficiencia, usuario=:usuario, tipo_usuario=:tipousuario, passagem=:passagem, tipo_passagem=:tipopassagem, complemento=:complemento WHERE id=:id");
 		
    			// $result_sql_edita = mysqli_query($conn, $sql_edita);
 	$sql_edita->bindParam( ':id', $id );
@@ -137,7 +137,7 @@ try {
 	echo "Não deu!!!";
 }	
 		
-	} catch(PDOException $_SESSION) {
+	} catch(PDOException $e) {
 
 			$_SESSION['msg_registro'] = '<div class="alert alert-danger alert-dismissable">
   										<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>

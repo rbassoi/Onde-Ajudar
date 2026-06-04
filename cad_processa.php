@@ -122,7 +122,7 @@ if(empty($nome)) { //verificando se o campo Nome está vazio, campo obrigatório
 
     try {    
 
-    $result_sql_inserir = $conn->prepare("INSERT INTO u672441645_mor.cadastro (nome, sexo, rg, cpf, situacao, data_nascimento, estado, cidade, escolaridade, deficiencia, tipo_deficiencia, motivo, usuario, tipo_usuario, situacao_rua,  passagem, tipo_passagem, complemento, data_cadastro, cor) VALUES (:nome, :sexo, :rg, :cpf, :situacao, :datanascimento, :estado, :cidade, :escolaridade, :deficiencia, :tipodeficiencia, :b, :usuario, :tipousuario, :situacaorua, :passagem, :tipopassagem, :complemento, NOW(), :cor)");
+    $result_sql_inserir = $conn->prepare("INSERT INTO cadastro (nome, sexo, rg, cpf, situacao, data_nascimento, estado, cidade, escolaridade, deficiencia, tipo_deficiencia, motivo, usuario, tipo_usuario, situacao_rua, passagem, tipo_passagem, complemento, data_cadastro, cor) VALUES (:nome, :sexo, :rg, :cpf, :situacao, :datanascimento, :estado, :cidade, :escolaridade, :deficiencia, :tipodeficiencia, :b, :usuario, :tipousuario, :situacaorua, :passagem, :tipopassagem, :complemento, NOW(), :cor)");
   
       
     $result_sql_inserir->bindParam( ':nome', $nome );
@@ -163,7 +163,7 @@ if(empty($nome)) { //verificando se o campo Nome está vazio, campo obrigatório
    } 
   } 
 
-  catch(PDOException $_SESSION) {
+  catch(PDOException $e) {
 
       $_SESSION['msg_registro'] = '<div class="alert alert-danger alert-dismissable">
                       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>

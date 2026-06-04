@@ -8,9 +8,11 @@ $codigo= $_GET['codigo'];
 
 
 //Deleta o registro referente a id 
-$sql = "DELETE FROM u672441645_mor.arquivos WHERE Codigo= ' ".$codigo." '";
+$codigo = (int)$codigo;
+$sql = "DELETE FROM arquivos WHERE codigo = :codigo";
 
 $deleta = $conn->prepare($sql);
+$deleta->bindParam(':codigo', $codigo, PDO::PARAM_INT);
 $deleta->execute();
 
 $_SESSION['msg_registro'] = '<div class="alert alert-success alert-dismissable">

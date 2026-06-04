@@ -1,415 +1,234 @@
 <?php
-//Iniciando a sessão
 session_start();
 
-/*
-// Verifica se existe os dados da sessão de login 
-if(!isset($_SESSION["id_usuario"]) || !isset($_SESSION["nome_usuario"])) {
+if (!isset($_SESSION['id_usuario'])) {
+    header('Location: login.php');
+    exit;
+}
 
-// Usuário não logado! Redireciona para a página de login 
-header("Location: login.php"); 
-exit; 
-} 
-
-
-//Capturando dados do usuário logado
-	$login = $_SESSION["login"];
-	$id_usuario = $_SESSION["id_usuario"];
-	$nomeuser =	$_SESSION["nome_usuario"]; 
-	$permissao = $_SESSION["permissao"];
-	$batalhaouser = $_SESSION["batalhao"]; 
-	$emailuser = $_SESSION["email"];
-	$rpmuser = $_SESSION["rpm"];
-	$mpuser = $_SESSION["mp"];
-
-														// PERMISSÃO DE ACESSO A ALTERAÇÃO DE CADASTROS	
-														//   SE PERFIL DE ACESSO FOR IGUAL A COMANDANTE. ENTÃO, ACESSO NEGADO! E REDIRECIONA PARA PAGINA INDEX	
-																												
-														$administrador = '1';
-														$cartorio = '2';
-														$cartoriocap = '3';
-														$mp = '4';
-														$mpcap = '5';
-														$cmtrpm = '6';
-														$guarnicao = '7';
-														$consulta = '8';
-
-														//if($permissao !== '1' || $permissao !== '3' || $permissao !== '4') 
-															if(strcasecmp($permissao, $mp) == 0 || strcasecmp($permissao, $mpcap) == 0 || strcasecmp($permissao, $cmtrpm) == 0 || strcasecmp($permissao, $consulta) == 0) {
-
-															$_SESSION['msg'] = '<div class="alert alert-danger alert-dismissable">
-  																				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-  																				<strong>Atenção!! Você não tem permissão para alterar cadastros! Contate o administrador..</strong>
-  																				</div>';
-
-  															header("Location: index.php");
-														}
-
-*/
-//Chamando arquivo de conexão com o banco de dados
 require_once('conexao.php');
 
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $_SESSION['id'] = (int)$_GET['id'];
+}
+$id = (int)($_SESSION['id'] ?? 0);
+if ($id < 1) {
+    header('Location: index.php');
+    exit;
+}
 
-//Define id como zero e fazer a Verificação para pegar o id da linha que está sendo editada no banco de dados. Pegar o id de verdade na url da pagina
-		
-		$id = 0;
-		
-		if(isset($_GET['id']) && empty($_GET['id']) == false) {
-			$_SESSION['id'] = addslashes($_GET['id']);
-		}  
+// ── Dados do cadastro ──────────────────────────────────────────
+$sql = "SELECT
+    c.id, c.nome, c.rg, c.cpf, c.situacao,
+    c.data_nascimento, c.sexo, c.estado, c.cidade,
+    c.escolaridade, c.situacao_rua, c.motivo,
+    c.deficiencia, c.tipo_deficiencia,
+    c.usuario, c.tipo_usuario,
+    c.passagem, c.tipo_passagem, c.complemento,
+    cs.id AS ids,   cs.situacao AS situacao_label,
+    ci.id AS idcid, ci.cidade   AS cidade_label,
+    se.id AS idn,   se.sexo     AS sexo_label,
+    es.id AS idest, es.estado   AS estado_label,
+    e.id  AS ide,   e.escolaridade AS escolaridade_label
+FROM cadastro c
+LEFT JOIN cadastro_situacao   cs ON cs.id = c.situacao
+LEFT JOIN cidade              ci ON ci.id = c.cidade
+LEFT JOIN sexo                se ON se.id = c.sexo
+LEFT JOIN estados             es ON es.id = c.estado
+LEFT JOIN cadastro_escolaridade e ON e.id = c.escolaridade
+WHERE c.id = :id";
 
-		$id = $_SESSION['id'];
+$stmt = $conn->prepare($sql);
+$stmt->bindValue(':id', $id, PDO::PARAM_INT);
+$stmt->execute();
+$row = $stmt->fetch();
 
-		//Fazendo verificação para evitar que o usuário quebre nossa url, caso ele tente apagar nossas variáveis na url, o mesmo será direcionado para pagina inicial
-		if($id < 1) {
-			header("Location: index.php");
-		}
+if (!$row) {
+    header('Location: index.php');
+    exit;
+}
 
-//Consultando os dados da linha que será editada para popular o formulário de edição com as informações atuais do BD
-	$sql = "SELECT		c.id,
-						c.nome,
-						c.rg,
-						c.cpf,
-						c.situacao,
-						cs.id AS ids,
-						cs.situacao,
-						c.data_nascimento,
-						c.sexo,
-						c.estado,
-						c.cidade,
-						c.escolaridade,
-						e.id AS ide,
-						e.escolaridade,
-						c.situacao_rua,
-						c.motivo,
-						c.deficiencia,
-						c.tipo_deficiencia,
-						c.usuario,
-						c.tipo_usuario,
-						c.passagem,
-						c.tipo_passagem,
-						c.complemento,
-						c.cidade,
-						ci.id as idcid,
-						ci.cidade,
-						se.id as idn,
-						se.sexo,
-						c.estado,
-						es.id AS idest,
-						es.estado
-						
-						FROM
-						u672441645_mor.cadastro c
-						LEFT JOIN u672441645_mor.cadastro_situacao cs ON (cs.id = c.situacao)
-						LEFT JOIN u672441645_mor.cidade ci ON (c.cidade = ci.id)
-						LEFT JOIN u672441645_mor.sexo se ON (se.id = c.sexo)
-						LEFT JOIN u672441645_mor.estados es ON (es.id = c.estado)
-						LEFT JOIN u672441645_mor.cadastro_escolaridade e ON (e.id = c.escolaridade)
-						
-						WHERE
-						c.id = '$id'
-						";
+// ── Listas de referência ───────────────────────────────────────
+$situacoes    = $conn->query("SELECT id, situacao FROM cadastro_situacao ORDER BY id")->fetchAll();
+$estados_list = $conn->query("SELECT id, estado   FROM estados ORDER BY estado")->fetchAll();
+$cidades_list = $conn->query("SELECT id, cidade   FROM cidade  ORDER BY cidade")->fetchAll();
+$escolaris    = $conn->query("SELECT id, escolaridade FROM cadastro_escolaridade ORDER BY id")->fetchAll();
 
-									$result_sql = $conn->prepare( $sql );
-
-									$result_sql->execute();
-									$row_sql = $result_sql->fetch(); //lendo os dados 
-
-	
-
+$page_title = 'Editar Cadastro — ' . htmlspecialchars($row['nome']);
+include 'includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-		<head>
-			<title>CADASTRO DE MORADORES DE RUA - PMSC</title>
-
-			<meta charset="UTF-8">
-			<!-- Tag para fazer site responsivo -->
-			<meta name="viewport" content="width=device-width, initial-scale=1" >
-			
-			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
-    		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-		    
-    <!-- Bootstrap -->
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js/"></script>
-    <!-- Latest compiled and minified CSS -->
-    
-	<!-- Estilos CSS personalizados dessa pagina -->
-		        <link rel="stylesheet" type="text/css" href="estilos/css/cad.css">
-		        
-		</head>
-<body>
-
-
-<div>
-
-<!-- Barra de navegação supereior fixada no topo-->
-
-<nav class="navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="index.php">Página Principal</a>
+<div class="page-header">
+    <div class="container">
+        <h1>Editar Cadastro</h1>
+        <p class="sub"><?= htmlspecialchars($row['nome']) ?></p>
     </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="index.php">Home</a></li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Relatórios <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="relatorio_idade.php">Relatório por idade</a></li>
-            <li><a href="#">Relatório 2</a></li>
-            <li><a href="#">Relatório 3</a></li>
-          </ul>
-        </li>
-        <li><a href="cad.php">Cadastro</a></li>
-        <li><a href="#">Configurações</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sr. Pontes</a></li>
-        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-</div>	
-	<br/>
-	<!-- div 1 abre o container -->
-<div class="container">
-	<br/><br/>
-<div class="relogio">
-<?php
-date_default_timezone_set('America/Sao_Paulo');
-$dataHora = date("d/m/Y H:i:s");
-echo '<div> <span class="glyphicon glyphicon-time"></span> ' .$dataHora.'</div>';
-?>
 </div>
 
-<br/><br/>
+<div class="container" style="padding-top:20px;padding-bottom:60px">
 
-<?php
-//A variável global abaixo irá exiibir a mensagem se a inserção dos dados dos formulários funcionou, ou se algum campo obrigatório não foi preenchido.
-	if(isset($_SESSION['msg_registro'])) {
-		echo $_SESSION['msg_registro'];
-		unset($_SESSION['msg_registro']);
-	}
+<?php if (isset($_SESSION['msg_registro'])): ?>
+    <div class="alert alert-<?= strpos($_SESSION['msg_registro'], 'sucesso') !== false ? 'success' : 'danger' ?> mb-3" data-dismiss="auto">
+        <?= $_SESSION['msg_registro'] ?>
+    </div>
+    <?php unset($_SESSION['msg_registro']); ?>
+<?php endif; ?>
 
-	?>
-<!-- Painel de exibição do formulário
- -->
-<!-- div 2 abre o panel-default --> 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<p><span class="glyphicon glyphicon-copy"></span> Cadastro de Moradores  </p>
-	</div>
-		<!-- div 3 abre o panel body -->
-		<div class="panel-body">
-<!-- div 4 abre -->			
-			<div>
+<div class="card">
+    <form method="post" action="cadastro_update_processa.php" data-validate>
+        <input type="hidden" name="id" value="<?= $id ?>">
 
-		<br/>
-		<!-- Painel de exibição do formulário-->
-				<div class="panel panel-default">
-					<div class="panel-body">
+        <!-- Nome -->
+        <div class="form-group">
+            <label class="form-label">Nome <span style="color:var(--danger)">*</span></label>
+            <input type="text" name="nome" class="form-control" required
+                   value="<?= htmlspecialchars($row['nome']) ?>">
+        </div>
 
-				<h3>Alterar dados cadastrais do morador</h3>
-				
-<br/>
- <!--
- 	1 - O formulário abaixo irá enviar os dados para o arquivo cadastro_update_processa.php --> 			
-  				<form method="POST" action="cadastro_update_processa.php">
-  					<!--Criando uma tag input com campo tipo hidden para enviar o id da linha que está em edição de forma oculta para o nosso arquivos de update -->
-  					<input type="hidden" name="id" value="<?php echo $id; ?>">
-  						<div class="form-group col-xs-12 col-md-12">
-											<label> * Nome:</label>
-												<input type="text" name="nome" class="form-control" value="<?php echo $row_sql['nome']; ?>" />
-										</div>
-										<br/><br/>
-										<div class="form-row">
-											<div class="form-group col-xs-6 col-md-3">
-												<label for="situacao">Situação:</label><br/>
-												<select name="situacao" class="form-control" >
-													<?php
-													//mostrando o ultimo dado selecionado e salvo no bd dentro da option do campo select 
-													echo '<option value="'.$row_sql['ids'].'">'.$row_sql['situacao'].'</option>';
-													?>
-													<?php
-														$sql_status = "SELECT * FROM u672441645_mor.cadastro_situacao ";
-															$result_sql_status = $conn->prepare($sql_status);
-																$result_sql_status->execute();
-																	while($row_sql_status = $result_sql_status->fetch() ) {
-																		echo '<option value="'.$row_sql_status['id'].'">'.utf8_encode($row_sql_status['situacao'].'</option>');
-																	}
-													?>
-												</select>
-											</div>
-											<div class="form-group col-xs-6 col-md-3">
-												<label> RG:</label><br/>
-													<input type="text" name="rg" class="form-control" value="<?php echo $row_sql['rg']; ?>" />
-											</div>
-											<div class="form-group col-xs-6 col-md-6">
-												<label> * CPF:</label><br/>
-													<input type="text" name="cpf" class="form-control" value="<?php echo $row_sql['cpf']; ?>" />
-											</div>
-										</div>
-										<br/><br/>
-										<div class="form-row">	
-											<div class="form-group col-xs-4 col-md-3">
-												<label for="datanascimento">Data nascimento:</label><br/>
-													<input type="date" name="datanascimento" class="form-control" value="<?php echo $row_sql['data_nascimento']; ?>">
-											</div>
-											<div class="form-group col-xs-4 col-md-3" class="form1">
-												<label for="estado"> * Estado:</label><br/>
-													<select name="estado" class="form-control" id="estado" >
-															<?php
-																//mostrando o ultimo dado selecionado e salvo no bd dentro da option do campo select 
-																echo '<option value="'.$row_sql['idest'].'">'.$row_sql['estado'].'</option>';
-															?>
-															<?php
-															$sql_estado = "SELECT * FROM u672441645_mor.estados ";
-																$result_sql_estado = $conn->prepare($sql_estado);
-																	$result_sql_estado->execute();
-																		while($row_sql_estado = $result_sql_estado->fetch() ) {
-																			echo '<option value="'.$row_sql_estado['id'].'">'.$row_sql_estado['estado'].'</option>';
-																		}
-														?>
-													</select>
-											</div>
-											<div class="form-group col-xs-4 col-md-3">
-												<label for="cidade"> * Cidade:</label><br/>
-													<select name="cidade" class="form-control" id="cidade" >
-															<?php
-																//mostrando o ultimo dado selecionado e salvo no bd dentro da option do campo select 
-																echo '<option value="'.$row_sql['idcid'].'">'.$row_sql['cidade'].'</option>';
-															?>
-															<?php
-															$sql_cidade = "SELECT * FROM u672441645_mor.cidade ";
-																$result_sql_cidade = $conn->prepare($sql_cidade);
-																	$result_sql_cidade->execute();
-																		while($row_sql_cidade = $result_sql_cidade->fetch() ) {
-																			echo '<option value="'.$row_sql_cidade['id'].'">'.$row_sql_cidade['cidade'].'</option>';
-																		}
-														?>
-													</select>
-											</div>
-											<div class="form-group col-xs-4 col-md-3">
-												<label for="escolaridade">Escolaridade:</label><br/>
-													<select name="escolaridade" class="form-control" >
-														<?php
-																//mostrando o ultimo dado selecionado e salvo no bd dentro da option do campo select 
-																echo '<option value="'.$row_sql['ide'].'">'.$row_sql['escolaridade'].'</option>';
-															?>
-														<?php
-															$sql_es = "SELECT * FROM u672441645_mor.cadastro_escolaridade ";
-																$result_sql_es = $conn->prepare($sql_es);
-																	$result_sql_es->execute();
-																		while($row_sql_es = $result_sql_es->fetch() ) {
-																			echo '<option value="'.$row_sql_es['id'].'">'.$row_sql_es['escolaridade'].'</option>';
-																		}
-														?>
-													</select>
-											</div> 					
-										</div>
-										<br/><br/>
-										<div class="form-row">
-											<div class="form-check-input col-xs-4 col-md-3">
-													<label for="situacaorua">Situação de Rua:</label><br/>
-													<?php
-													$situacaorua = $row_sql['situacao_rua'];
-													?>
-													<input type="radio" name="situacaorua"  value= 1  "<?php if ($situacaorua == 1) echo ' checked="checked"'; ?>"/> Sim <br/>
-													<input type="radio" name="situacaorua"  value= 2  "<?php if ($situacaorua == 2) echo ' checked="checked"'; ?>"/> Não 
-											</div>
-											<div class="form-group col-xs-12 col-sm-6 col-md-9">
-												<label for="motivorua"> Motivo que vive na rua:</label><br/>
-												<?php
-												$motivorua = $row_sql['motivo'];
-												$row = explode(" | ", $motivorua ); 
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px" class="mb-3">
+            <!-- Situação -->
+            <div class="form-group">
+                <label class="form-label">Situação</label>
+                <select name="situacao" class="form-control">
+                    <?php foreach ($situacoes as $s): ?>
+                    <option value="<?= $s['id'] ?>" <?= $row['situacao'] == $s['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($s['situacao']) ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <!-- RG -->
+            <div class="form-group">
+                <label class="form-label">RG</label>
+                <input type="text" name="rg" class="form-control"
+                       value="<?= htmlspecialchars($row['rg'] ?? '') ?>">
+            </div>
+            <!-- CPF -->
+            <div class="form-group">
+                <label class="form-label">CPF <span style="color:var(--danger)">*</span></label>
+                <input type="text" name="cpf" class="form-control" required
+                       value="<?= htmlspecialchars($row['cpf'] ?? '') ?>">
+            </div>
+        </div>
 
-												?>
-												<input type="text"  name="motivorua" class="form-control" value="<?php echo $row_sql['motivo']; ?>" >
-											</div>	
-										</div>	
-										<div class="form-row">
-											<div class="form-check col-xs-4 col-md-3">
-												<label for="deficiencia"> Possui deficiência:</label><br/>
-												<?php
-												$deficiencia = $row_sql['deficiencia'];
-												?>
-													<input type="radio" class="form-check-input" name="deficiencia" value= 1 "<?php if ($deficiencia == 1) echo ' checked="checked"'; ?>"> Sim <br/>
-													<input type="radio" class="form-check-input" name="deficiencia" value= 2 "<?php if ($deficiencia == 2) echo ' checked="checked"'; ?>"> Não 
-											</div>
-											<div class="form-group col-xs-12 col-sm-6 col-md-9">
-											<label for="tipodeficiencia"> Tipo de deficiência:</label><br/>	
-												<input type="text"  name="tipodeficiencia" class="form-control" value="<?php echo $row_sql['tipo_deficiencia']; ?>" >
-											</div>
-										</div>
-										<div class="form-group">
-											<div class="form-check col-xs-4 col-md-3">
-												<label for="usuario"> Faz uso de Alcool, Drogas:</label><br/>
-												<?php
-												$usuario = $row_sql['usuario'];
-												?>
-													<input type="radio" class="form-check-input" name="usuario" value= 1 "<?php if ($usuario == 1) echo ' checked="checked"'; ?>"> Sim <br/>
-													<input type="radio" class="form-check-input" name="usuario" value= 2 "<?php if ($usuario == 2) echo ' checked="checked"'; ?>"> Não 
-											</div>
-											<div class="form-group col-xs-12 col-md-9">
-												<label for="tipousuario"> Dependente de:</label><br/>
-													<input type="text" name="tipousuario" class="form-control" value="<?php echo $row_sql['tipo_usuario']; ?>">
-											</div>
-										</div>
-										<br/><br/>
-										<div class="form-row">
-											<div class="form-group col-xs-4 col-md-3">
-												<label for="passagem"> Passagem Criminal:</label><br/>
-												<?php
-												$passagem = $row_sql['passagem'];
-												?>
-													<input type="radio" class="form-check-input" name="passagem" value= 1 "<?php if ($passagem == 1) echo ' checked="checked"'; ?>"> Sim <br/>
-													<input type="radio" class="form-check-input" name="passagem" value= 2 "<?php if ($passagem == 2) echo ' checked="checked"'; ?>"> Não 
-											</div>
-											<div class="form-group col-xs-12 col-md-9" >
-												<label for="tipopassagem"> Tipo de Passagem:</label><br/>
-													<input type="text" name="tipopassagem" class="form-control" id="tipopassagem" value="<?php echo $row_sql['tipo_passagem']; ?>">
-											</div>
-										</div>										
-										<div class="form-row">										
-											<div class="form-group col-xs-12 col-md-12">
-											    <label for="complemento">Dados Complementares:</label><br/>
-												<textarea name="complemento" class="form-control"  rows="5" placeholder="Não foram inseridos dados complementares." ><?php echo $row_sql['complemento']; ?></textarea>
-											</div>
-										</div>
-										<br/><br/>
-										<div class="form-row">
-											<div class="form-group col-xs-4 col-md-3">
-													<button type="button" class="btn btn-default form-control"><a href="index.php">Limpar</a></button>
-											</div>
-											<div class="form-group col-xs-4 col-md-3">
-													<input type="submit" value="Salvar" class="btn btn-primary form-control">
-											</div>										
-										</div>	
-									
-								</form>
-					</div>					
-				</div>				
-			</div>
-		</div>
-	</div>
-</div>	
-		
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px" class="mb-3">
+            <!-- Data nascimento -->
+            <div class="form-group">
+                <label class="form-label">Data de Nascimento</label>
+                <input type="date" name="datanascimento" class="form-control"
+                       value="<?= htmlspecialchars($row['data_nascimento'] ?? '') ?>">
+            </div>
+            <!-- Estado -->
+            <div class="form-group">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-control">
+                    <option value="">Selecione...</option>
+                    <?php foreach ($estados_list as $e): ?>
+                    <option value="<?= $e['id'] ?>" <?= $row['estado'] == $e['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($e['estado']) ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <!-- Cidade -->
+            <div class="form-group">
+                <label class="form-label">Cidade</label>
+                <select name="cidade" class="form-control">
+                    <option value="">Selecione...</option>
+                    <?php foreach ($cidades_list as $c): ?>
+                    <option value="<?= $c['id'] ?>" <?= $row['cidade'] == $c['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($c['cidade']) ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <!-- Escolaridade -->
+            <div class="form-group">
+                <label class="form-label">Escolaridade</label>
+                <select name="escolaridade" class="form-control">
+                    <option value="">Selecione...</option>
+                    <?php foreach ($escolaris as $es): ?>
+                    <option value="<?= $es['id'] ?>" <?= $row['escolaridade'] == $es['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($es['escolaridade']) ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
 
-		 <!-- Bootstrap Core JavaScript -->
-        <script src="estilos/js/bootstrap.min.js"></script>
-</body>
-</html>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start" class="mb-3">
+            <div class="form-group">
+                <label class="form-label">Situação de Rua</label>
+                <div style="display:flex;gap:16px;padding-top:8px">
+                    <label><input type="radio" name="situacaorua" value="1" <?= $row['situacao_rua'] == 1 ? 'checked' : '' ?>> Sim</label>
+                    <label><input type="radio" name="situacaorua" value="2" <?= $row['situacao_rua'] == 2 ? 'checked' : '' ?>> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Motivo que vive na rua</label>
+                <input type="text" name="motivorua" class="form-control"
+                       value="<?= htmlspecialchars($row['motivo'] ?? '') ?>">
+            </div>
+        </div>
 
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start" class="mb-3">
+            <div class="form-group">
+                <label class="form-label">Possui Deficiência</label>
+                <div style="display:flex;gap:16px;padding-top:8px">
+                    <label><input type="radio" name="deficiencia" value="1" <?= $row['deficiencia'] == 1 ? 'checked' : '' ?>> Sim</label>
+                    <label><input type="radio" name="deficiencia" value="2" <?= $row['deficiencia'] == 2 ? 'checked' : '' ?>> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tipo de Deficiência</label>
+                <input type="text" name="tipodeficiencia" class="form-control"
+                       value="<?= htmlspecialchars($row['tipo_deficiencia'] ?? '') ?>">
+            </div>
+        </div>
 
-  					
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start" class="mb-3">
+            <div class="form-group">
+                <label class="form-label">Uso de Álcool/Drogas</label>
+                <div style="display:flex;gap:16px;padding-top:8px">
+                    <label><input type="radio" name="usuario" value="1" <?= $row['usuario'] == 1 ? 'checked' : '' ?>> Sim</label>
+                    <label><input type="radio" name="usuario" value="2" <?= $row['usuario'] == 2 ? 'checked' : '' ?>> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Dependente de</label>
+                <input type="text" name="tipousuario" class="form-control"
+                       value="<?= htmlspecialchars($row['tipo_usuario'] ?? '') ?>">
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start" class="mb-3">
+            <div class="form-group">
+                <label class="form-label">Passagem Criminal</label>
+                <div style="display:flex;gap:16px;padding-top:8px">
+                    <label><input type="radio" name="passagem" value="1" <?= $row['passagem'] == 1 ? 'checked' : '' ?>> Sim</label>
+                    <label><input type="radio" name="passagem" value="2" <?= $row['passagem'] == 2 ? 'checked' : '' ?>> Não</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tipo de Passagem</label>
+                <input type="text" name="tipopassagem" class="form-control"
+                       value="<?= htmlspecialchars($row['tipo_passagem'] ?? '') ?>">
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="form-label">Dados Complementares</label>
+            <textarea name="complemento" class="form-control" rows="4"
+                      placeholder="Informações adicionais..."><?= htmlspecialchars($row['complemento'] ?? '') ?></textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a href="ver_cadastro.php?id=<?= $id ?>" class="btn btn-ghost">← Cancelar</a>
+            <button type="submit" class="btn btn-primary">💾 Salvar alterações</button>
+        </div>
+    </form>
+</div>
+
+</div>
+
+<?php include 'includes/footer.php'; ?>

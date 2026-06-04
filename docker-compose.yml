@@ -1,0 +1,42 @@
+services:
+
+  app:
+    build: .
+    container_name: moradores-app
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PG_HOST:     db
+      PG_PORT:     "5432"
+      PG_USER:     postgres
+      PG_PASSWORD: postgres
+      PG_DB_NAME:  moradores_de_rua
+
+  db:
+    image: postgres:16-alpine
+    container_name: moradores-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB:       moradores_de_rua
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./banco/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./banco/seeds.sql:/docker-entrypoint-initdb.d/02_seeds.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pg_data:

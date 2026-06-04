@@ -1,0 +1,10 @@
+Options -Indexes
+
+# Página inicial aponta para landing
+DirectoryIndex landing.php index.php
+
+# Bloqueia acesso direto a arquivos sensíveis
+<FilesMatch "\.(sql|env|yml|yaml|lock)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

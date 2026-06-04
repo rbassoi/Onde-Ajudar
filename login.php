@@ -1,71 +1,92 @@
 <?php
 session_start();
+require_once('conexao.php');
 
-//conectando ao banco de dados
-  require_once("conexao.php"); 
-
+if (isset($_SESSION['id_usuario'])) { header('Location: index.php'); exit; }
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <title>REDE CATARINA - PMSC</title>
-  <meta charset="UTF-8">
-      <!-- Tag para fazer site responsivo -->
-      <meta name="viewport" content="width=device-width, initial-scale=1" >
-      
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-        
-    <!-- Bootstrap -->
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js/"></script>
-    <!-- Latest compiled and minified CSS -->
-    
-  <!-- Estilos CSS personalizados dessa pagina -->
-  <link rel="stylesheet" type="text/css" href="estilos/css/login.css">
-  
-   
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entrar — Onde Ajudar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilos/css/app.css">
+    <style>
+        body { background: var(--board); background-image: radial-gradient(rgba(58,52,44,.06) 1px, transparent 1.1px); background-size: 20px 20px; }
+        .divider { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; margin: 20px 0; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(58,52,44,.15); }
+    </style>
 </head>
 <body>
-<div>
-<div class="jumbotron boxlogin">
-  <?php
-  if(isset($_SESSION['msg_login'])){
-        echo $_SESSION['msg_login'];
-        unset($_SESSION['msg_login']);
-      }
-  ?>
-        <form method="POST" name="login" id="login" action="login_valida.php">
-            <div class="form-group">
-              <label>Login:</label>
-                <input type="text" name="login" id="login" class="form-control" placeholder="Entre com usuario" />
+
+<div class="login-page">
+    <div class="login-box">
+
+        <div class="logo">🤝 <span>Onde</span> Ajudar</div>
+        <p class="sub">Juntos por quem está na rua</p>
+
+        <?php if (isset($_SESSION['msg_login'])): ?>
+            <div class="alert alert-<?= strpos($_SESSION['msg_login'],'sucesso')!==false?'success':'danger' ?>" data-dismiss="auto">
+                <?= $_SESSION['msg_login'] ?>
             </div>
+            <?php unset($_SESSION['msg_login']); ?>
+        <?php endif; ?>
+
+        <form method="post" action="login_valida.php" data-validate>
+
             <div class="form-group">
-                <label>Senha:</label>
-              <input type="password" name="senha" id="senha" class="form-control" placeholder="Entre com a senha" />
+                <label class="form-label" for="inp-login">Login</label>
+                <input type="text" id="inp-login" name="login" class="form-control"
+                       placeholder="Seu usuário" required autofocus autocomplete="username">
             </div>
+
             <div class="form-group">
-              <label for="funcao">Função:</label><br/>
-                <select name="funcao" class="form-control" >
-                  <option value="">Selecione o Função</option>
+                <label class="form-label" for="inp-senha">Senha</label>
+                <input type="password" id="inp-senha" name="senha" class="form-control"
+                       placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="inp-funcao">Função</label>
+                <select id="inp-funcao" name="funcao" class="form-control" required>
+                    <option value="">Selecione sua função...</option>
                     <?php
-                      $sql_b = "SELECT * FROM u672441645_mor.funcao ";
-                        $result_sql_b = $conn->prepare($sql_b);
-                          $result_sql_b->execute();
-                            while($row_sql_b = $result_sql_b->fetch() ) {
-                              echo '<option value="'.$row_sql_b['id'].'">'.$row_sql_b['funcao'].'</option>';
-                            }
+                    $stmt = $conn->prepare("SELECT id, funcao FROM funcao ORDER BY funcao");
+                    $stmt->execute();
+                    while ($row = $stmt->fetch()):
                     ?>
+                    <option value="<?= (int)$row['id'] ?>"><?= htmlspecialchars($row['funcao']) ?></option>
+                    <?php endwhile; ?>
                 </select>
             </div>
-            <input type="submit" value="Entrar" class="btn btn-success" />
+
+            <!-- Esqueci minha senha -->
+            <div style="text-align:right;margin-top:-6px;margin-bottom:16px">
+                <a href="esqueci_senha.php" style="font-size:13px;color:var(--muted)">Esqueci minha senha</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg">
+                Entrar →
+            </button>
+
         </form>
-    </div> 
-  </div>
-<!-- Bootstrap Core JavaScript -->
-        <script src="estilos/js/bootstrap.min.js"></script>
+
+        <div class="divider">ou</div>
+
+        <a href="registro.php" class="btn btn-ghost btn-block" style="text-align:center">
+            Criar conta gratuitamente
+        </a>
+
+        <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">
+            <a href="landing.php" style="color:var(--muted)">← Voltar para o início</a>
+        </div>
+
+    </div>
+</div>
+
+<script src="estilos/js/app.js"></script>
 </body>
 </html>
