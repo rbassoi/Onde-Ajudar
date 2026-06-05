@@ -49,20 +49,6 @@ if (isset($_SESSION['id_usuario'])) { header('Location: index.php'); exit; }
                        placeholder="••••••••" required autocomplete="current-password">
             </div>
 
-            <div class="form-group">
-                <label class="form-label" for="inp-funcao">Função</label>
-                <select id="inp-funcao" name="funcao" class="form-control" required>
-                    <option value="">Selecione sua função...</option>
-                    <?php
-                    $stmt = $conn->prepare("SELECT id, funcao FROM funcao ORDER BY funcao");
-                    $stmt->execute();
-                    while ($row = $stmt->fetch()):
-                    ?>
-                    <option value="<?= (int)$row['id'] ?>"><?= htmlspecialchars($row['funcao']) ?></option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-
             <!-- Esqueci minha senha -->
             <div style="text-align:right;margin-top:-6px;margin-bottom:16px">
                 <a href="esqueci_senha.php" style="font-size:13px;color:var(--muted)">Esqueci minha senha</a>

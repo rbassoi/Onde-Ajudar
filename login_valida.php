@@ -3,27 +3,22 @@ session_start();
 
 require_once("conexao.php");
 
-$login  = isset($_POST["login"])  ? trim($_POST["login"])          : false;
-$senha  = isset($_POST["senha"])  ? sha1(trim($_POST["senha"]))    : false;
-$funcao = isset($_POST["funcao"]) ? trim($_POST["funcao"])         : false;
+$login  = isset($_POST["login"]) ? trim($_POST["login"])       : false;
+$senha  = isset($_POST["senha"]) ? sha1(trim($_POST["senha"])) : false;
 
 if (!$login || !$senha) {
-    $_SESSION['msg_login'] = '<div class="alert alert-danger alert-dismissable">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <strong>Você deve digitar o login e a senha!<br/></strong>
-    </div>';
+    $_SESSION['msg_login'] = 'Você deve digitar o login e a senha!';
     header("Location: login.php");
     exit;
 }
 
 $sql = "SELECT id, nome, login, senha, email, perfil, sexo, matricula, funcao
         FROM usuarios
-        WHERE login = :login AND bloqueado = 1 AND funcao = :funcao
+        WHERE login = :login AND bloqueado = 1
         LIMIT 1";
 
 $result_sql = $conn->prepare($sql);
-$result_sql->bindValue(':login',  $login);
-$result_sql->bindValue(':funcao', $funcao, PDO::PARAM_INT);
+$result_sql->bindValue(':login', $login);
 $result_sql->execute();
 $total_dados = $result_sql->rowCount();
 
