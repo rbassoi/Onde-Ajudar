@@ -92,7 +92,7 @@ include 'includes/header.php';
                 <h1>Cadastros</h1>
                 <p class="sub">Moradores em situação de rua registrados no sistema</p>
             </div>
-            <a href="cad.php" class="btn btn-primary">＋ Novo cadastro</a>
+            <a href="cadastro.php" class="btn btn-primary">＋ Novo cadastro</a>
         </div>
     </div>
 </div>

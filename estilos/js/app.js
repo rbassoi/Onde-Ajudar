@@ -37,12 +37,20 @@ function initTabs() {
     });
   });
 
-  // Restore from hash
+  // Restore from hash on load
   const hash = location.hash.replace('#', '');
   if (hash) {
     const btn = document.querySelector(`.avista-tabs .tab-btn[data-tab="${hash}"]`);
     if (btn) btn.click();
   }
+
+  // Handle brand link or any same-page hash navigation
+  window.addEventListener('hashchange', () => {
+    const h = location.hash.replace('#', '');
+    if (!h) return;
+    const btn = document.querySelector(`.avista-tabs .tab-btn[data-tab="${h}"]`);
+    if (btn) btn.click();
+  });
 }
 
 /* ---- Chip toggle (necessidades) ---- */
@@ -51,7 +59,8 @@ function initChips() {
     const cb = chip.querySelector('input[type="checkbox"]');
     if (cb && cb.checked) chip.dataset.active = 'true';
 
-    chip.addEventListener('click', () => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault(); // prevent browser auto-toggling the hidden checkbox a second time
       const isActive = chip.dataset.active === 'true';
       chip.dataset.active = isActive ? 'false' : 'true';
       if (cb) cb.checked = !isActive;
@@ -107,21 +116,27 @@ function initFilterbar() {
 }
 
 function filterCards(filter) {
+  const estadoId = (document.getElementById('fil-estado')?.value || '');
+  const cidadeId = (document.getElementById('fil-cidade')?.value || '');
+  const bairro   = (document.getElementById('fil-bairro')?.value || '').toLowerCase();
+
   document.querySelectorAll('.avista-card').forEach(card => {
-    if (filter === 'all') {
-      card.style.display = '';
-      return;
+    let show = true;
+
+    // Filtro de status
+    if (filter !== 'all') {
+      const status = (card.dataset.status || '').toLowerCase();
+      if (filter === 'urgentes'  && status !== 'urgente')  show = false;
+      if (filter === 'pendentes' && status !== 'pendente') show = false;
+      if (filter === 'atendidos' && status !== 'atendido') show = false;
     }
-    const status = (card.dataset.status || '').toLowerCase();
-    if (filter === 'urgentes') {
-      card.style.display = status === 'urgente' ? '' : 'none';
-    } else if (filter === 'recentes') {
-      card.style.display = '';
-    } else if (filter === 'atendidos') {
-      card.style.display = status === 'atendido' ? '' : 'none';
-    } else if (filter === 'pendentes') {
-      card.style.display = status === 'pendente' ? '' : 'none';
-    }
+
+    // Filtros de localização
+    if (show && estadoId && (card.dataset.estadoId || '') !== estadoId) show = false;
+    if (show && cidadeId && (card.dataset.cidadeId || '') !== cidadeId) show = false;
+    if (show && bairro   && (card.dataset.bairro   || '') !== bairro)   show = false;
+
+    card.style.display = show ? '' : 'none';
   });
 }
 
@@ -130,73 +145,149 @@ function initAvistaMap() {
   const mapEl = document.getElementById('avista-map');
   if (!mapEl || typeof L === 'undefined') return;
 
-  // Lazy-init so the map renders correctly when tab is visible
-  let mapInstance = null;
+  let mapInstance  = null;
+  let userMarker   = null;
+  let userCircle   = null;
+  let clusterGroup = null;
+  let heatLayer    = null;
+  let showHeat     = false;
+  let allPins      = [];
 
   function doInit() {
     if (mapInstance) return;
-    mapInstance = L.map('avista-map').setView([-27.5954, -48.5480], 13); // Florianópolis
+
+    // Start centered on Brazil; user location will re-center
+    mapInstance = L.map('avista-map', { zoomControl: true }).setView([-14.235, -51.925], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 18,
     }).addTo(mapInstance);
 
-    // Custom marker icon (accent color)
-    const accentIcon = L.divIcon({
-      className: '',
-      html: `<div style="
-        width:18px;height:18px;
-        background:#cf6a44;
-        border:2.5px solid #3a342c;
-        border-radius:50% 50% 50% 0;
-        transform:rotate(-45deg);
-        box-shadow:2px 2px 0 rgba(44,38,32,.3);
-      "></div>`,
-      iconSize:   [18, 18],
-      iconAnchor: [9, 18],
-      popupAnchor:[0,-18],
-    });
+    // Load pins into outer-scope variable so placeUser can access them
+    try { allPins = JSON.parse(document.getElementById('map-pins-data')?.textContent || '[]'); } catch(e) {}
 
-    // Load pins from embedded data
-    const pinsEl = document.getElementById('map-pins-data');
-    if (pinsEl) {
-      try {
-        const pins = JSON.parse(pinsEl.textContent);
-        pins.forEach(p => {
-          if (!p.lat || !p.lng) return;
-          L.marker([p.lat, p.lng], { icon: accentIcon })
-            .addTo(mapInstance)
-            .bindPopup(`
-              <div style="font-family:'Patrick Hand',cursive;min-width:200px">
-                <strong>${escHtml(p.local || 'Local não informado')}</strong><br>
-                <span style="color:#8d8579;font-size:13px">${escHtml(p.pessoas)} pessoa(s) · ${escHtml(p.tempo)}</span><br>
-                ${p.status === 'urgente' ? '<span style="background:#cf6a44;color:#fff7ef;border-radius:10px;padding:1px 8px;font-size:12px">urgente</span>' : ''}
-                ${p.status === 'atendido' ? '<span style="background:#d9e7d2;border-radius:10px;padding:1px 8px;font-size:12px">✓ atendido</span>' : ''}
-              </div>
-            `);
-        });
-      } catch (e) { /* no-op */ }
-    }
+    const statusColor = { urgente: '#cf6a44', pendente: '#c9a84c', atendido: '#5a9e4a' };
 
-    // Geolocation button
-    const locBtn = document.getElementById('btn-my-location');
-    if (locBtn) {
-      locBtn.addEventListener('click', () => {
-        if (!navigator.geolocation) return;
-        navigator.geolocation.getCurrentPosition(pos => {
-          const { latitude: lat, longitude: lng } = pos.coords;
-          mapInstance.setView([lat, lng], 15);
-          L.circle([lat, lng], { radius: 80, color: '#cf6a44', fillOpacity: .2 }).addTo(mapInstance);
-        });
+    // Build marker cluster
+    if (typeof L.markerClusterGroup === 'function') {
+      clusterGroup = L.markerClusterGroup({
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        iconCreateFunction(cluster) {
+          const n   = cluster.getChildCount();
+          const cls = n >= 20 ? 'av-cl-lg' : n >= 5 ? 'av-cl-md' : 'av-cl-sm';
+          return L.divIcon({ className: '', html: `<div class="av-cluster ${cls}">${n}</div>`, iconSize: [36, 36] });
+        },
       });
     }
+
+    allPins.forEach(p => {
+      if (!p.lat || !p.lng) return;
+      const color = statusColor[p.status] || '#cf6a44';
+      const icon  = L.divIcon({
+        className: '',
+        html: `<div style="width:12px;height:12px;background:${color};border:2px solid rgba(0,0,0,.4);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:1px 1px 3px rgba(0,0,0,.3)"></div>`,
+        iconSize: [12, 12], iconAnchor: [6, 12], popupAnchor: [0, -12],
+      });
+      const popup = `<div style="font-family:Inter,sans-serif;min-width:180px">
+        <strong>${escHtml(p.local || 'Local não informado')}</strong><br>
+        <span style="color:#8d8579;font-size:12px">${escHtml(String(p.pessoas))} pessoa(s) · ${escHtml(p.tempo)}</span><br>
+        ${p.status === 'urgente' ? '<span style="background:#cf6a44;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px">urgente</span>' : ''}
+        ${p.status === 'atendido' ? '<span style="background:#d9e7d2;border-radius:10px;padding:1px 8px;font-size:11px">✓ atendido</span>' : ''}
+      </div>`;
+      const marker = L.marker([p.lat, p.lng], { icon }).bindPopup(popup);
+      if (clusterGroup) clusterGroup.addLayer(marker);
+      else marker.addTo(mapInstance);
+    });
+    if (clusterGroup) mapInstance.addLayer(clusterGroup);
+
+    // Heatmap (urgentes têm peso maior)
+    if (typeof L.heatLayer === 'function' && allPins.length > 0) {
+      const heatData = allPins.map(p => [p.lat, p.lng, p.status === 'urgente' ? 1.0 : p.status === 'pendente' ? 0.6 : 0.3]);
+      heatLayer = L.heatLayer(heatData, {
+        radius: 35, blur: 25, maxZoom: 14,
+        gradient: { 0.3: '#5a9e4a', 0.6: '#c9a84c', 1.0: '#cf6a44' },
+      });
+    }
+
+    // Toggle heat button
+    const toggleBtn = document.getElementById('btn-toggle-heat');
+    if (toggleBtn) {
+      if (!heatLayer) { toggleBtn.style.display = 'none'; }
+      else {
+        toggleBtn.addEventListener('click', () => {
+          showHeat = !showHeat;
+          if (showHeat) {
+            if (clusterGroup) mapInstance.removeLayer(clusterGroup);
+            heatLayer.addTo(mapInstance);
+            toggleBtn.innerHTML = '📍 Marcadores';
+          } else {
+            mapInstance.removeLayer(heatLayer);
+            if (clusterGroup) clusterGroup.addTo(mapInstance);
+            toggleBtn.innerHTML = '🔥 Mapa de calor';
+          }
+        });
+      }
+    }
+
+    // My-location button: recenter
+    document.getElementById('btn-my-location')?.addEventListener('click', () => locateUser(false));
+
+    // Auto-locate on map open
+    locateUser(true);
   }
 
-  // If the map tab is already active, init immediately; otherwise wait for click
-  if (mapEl.closest('.tab-panel.active')) {
-    doInit();
+  function locateUser(autoCenter) {
+    if (!mapInstance || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      pos => placeUser(pos.coords.latitude, pos.coords.longitude, autoCenter),
+      ()  => { if (autoCenter) mapInstance.setView([-15.78, -47.93], 5); }, // fallback: centro do Brasil
+      { timeout: 8000, maximumAge: 60000 }
+    );
   }
+
+  function placeUser(lat, lng, center) {
+    if (!mapInstance) return;
+    if (userMarker) { mapInstance.removeLayer(userMarker); userMarker = null; }
+    if (userCircle) { mapInstance.removeLayer(userCircle); userCircle = null; }
+    userMarker = L.marker([lat, lng], {
+      icon: L.divIcon({
+        className: '',
+        html: '<div class="av-user-dot"><div class="av-user-pulse"></div></div>',
+        iconSize: [20, 20], iconAnchor: [10, 10],
+      }),
+      zIndexOffset: 2000,
+    }).bindPopup('<strong>📍 Você está aqui</strong>').addTo(mapInstance);
+    userCircle = L.circle([lat, lng], { radius: 400, color: '#4a90d9', fillOpacity: .06, weight: 1 }).addTo(mapInstance);
+    if (center) fitViewToUserAndPins(lat, lng);
+    else        mapInstance.setView([lat, lng], 14);
+  }
+
+  function fitViewToUserAndPins(userLat, userLng) {
+    const userLL = L.latLng(userLat, userLng);
+
+    // Tenta raios crescentes até encontrar avistamentos próximos
+    const radii = [30000, 100000, 500000];
+    let nearby = [];
+    for (const r of radii) {
+      nearby = allPins.filter(p => p.lat && p.lng && userLL.distanceTo(L.latLng(p.lat, p.lng)) <= r);
+      if (nearby.length > 0) break;
+    }
+
+    if (nearby.length === 0) {
+      // Sem avistamentos próximos: mostra o Brasil todo
+      mapInstance.setView([userLat, userLng], 12);
+      return;
+    }
+
+    const bounds = L.latLngBounds([userLL]);
+    nearby.forEach(p => bounds.extend([p.lat, p.lng]));
+    mapInstance.fitBounds(bounds.pad(0.25), { maxZoom: 15 });
+  }
+
+  if (mapEl.closest('.tab-panel.active')) doInit();
   window._avistaMapInit = doInit;
 }
 

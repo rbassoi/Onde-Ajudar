@@ -44,6 +44,20 @@ if ($acao === 'registrar') {
     $lat      = !empty($_POST['latitude'])  ? (float)$_POST['latitude']  : null;
     $lng      = !empty($_POST['longitude']) ? (float)$_POST['longitude'] : null;
 
+    // Foto upload
+    $foto_nome = null;
+    if (!empty($_FILES['foto']['tmp_name']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+        $ext = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
+        if (in_array($ext, ['jpg','jpeg','png','webp','gif'], true)) {
+            $dir = __DIR__ . '/uploads/avistamentos/';
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+            $foto_nome = uniqid('av_', true) . '.' . $ext;
+            if (!move_uploaded_file($_FILES['foto']['tmp_name'], $dir . $foto_nome)) {
+                $foto_nome = null;
+            }
+        }
+    }
+
     if (!in_array($status, ['urgente', 'pendente', 'atendido'], true)) {
         $status = 'pendente';
     }
@@ -73,11 +87,11 @@ if ($acao === 'registrar') {
             "INSERT INTO abordagem
                 (id_morador, data_abordagem, cidade, bairro, endereco,
                  relato, pessoas_count, necessidades, latitude, longitude,
-                 contato_registrante, status_avistamento, usuario_registro)
+                 contato_registrante, status_avistamento, usuario_registro, foto_avistamento)
              VALUES
                 (:id_morador, NOW(), :cidade, :bairro, :endereco,
                  :relato, :pessoas, :necessidades, :lat, :lng,
-                 :contato, :status, :usuario)"
+                 :contato, :status, :usuario, :foto)"
         );
         $stmt_ab->bindValue(':id_morador',   $id_morador,        PDO::PARAM_INT);
         $stmt_ab->bindValue(':cidade',       $cidade ?: null,    $cidade ? PDO::PARAM_INT : PDO::PARAM_NULL);
@@ -91,6 +105,7 @@ if ($acao === 'registrar') {
         $stmt_ab->bindValue(':contato',      $contato);
         $stmt_ab->bindValue(':status',       $status);
         $stmt_ab->bindValue(':usuario',      $_SESSION['login'] ?? '');
+        $stmt_ab->bindValue(':foto',         $foto_nome);
         $stmt_ab->execute();
 
         $conn->commit();

@@ -40,7 +40,7 @@ if ($total_dados) {
         $_SESSION["matricula"]    = $dados["matricula"];
         $_SESSION["funcao"]       = $dados["funcao"];
 
-        header("Location: index.php");
+        header("Location: avistamentos.php#registrar");
         exit;
     }
 

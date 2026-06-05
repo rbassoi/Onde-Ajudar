@@ -557,3 +557,34 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   .app-navbar nav { display: none; }
   .avista-tabs { padding: 10px 14px; }
 }
+
+/* ---------- Mapa: clusters e localização do usuário ---------- */
+.av-cluster {
+  display: grid; place-items: center; border-radius: 50%;
+  font-weight: 700; font-size: .78rem; color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.35);
+  border: 2px solid rgba(255,255,255,.7);
+}
+.av-cluster.av-cl-sm { width: 32px; height: 32px; background: #c9a84c; }
+.av-cluster.av-cl-md { width: 40px; height: 40px; background: #cf6a44; }
+.av-cluster.av-cl-lg { width: 48px; height: 48px; background: #a03a1e; }
+
+.av-user-dot {
+  position: relative; width: 20px; height: 20px;
+}
+.av-user-dot::before {
+  content: ''; position: absolute; inset: 3px;
+  border-radius: 50%; background: #4a90d9;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #4a90d9;
+}
+.av-user-pulse {
+  position: absolute; inset: -6px; border-radius: 50%;
+  border: 2px solid #4a90d9;
+  animation: av-pulse 2.2s ease-out infinite;
+  opacity: 0;
+}
+@keyframes av-pulse {
+  0%   { opacity: .8; transform: scale(.4); }
+  100% { opacity: 0;  transform: scale(1.6); }
+}
