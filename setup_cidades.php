@@ -11,6 +11,10 @@ $scripts = [
     'migrate_funcao'         => 'banco/migrate_funcao.sql',
     'migrate_foto'           => 'banco/migrate_foto_avistamento.sql',
     'migrate_desaparecidos'  => 'banco/migrate_desaparecidos.sql',
+    'migrate_restaurantes'     => 'banco/migrate_restaurantes.sql',
+    'migrate_restaurantes_ll'  => 'banco/migrate_restaurantes_latlng.sql',
+    'migrate_cardapio'         => 'banco/migrate_cardapio.sql',
+    'seeds_restaurantes_bh'  => 'banco/seeds_restaurantes_bh.sql',
     'seeds_cidades'          => 'banco/seeds_cidades_brasil.sql',
 ];
 

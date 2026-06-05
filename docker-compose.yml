@@ -18,6 +18,29 @@ services:
       PG_PASSWORD: postgres
       PG_DB_NAME:  moradores_de_rua
 
+  cron:
+    build: .
+    container_name: moradores-cron
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PG_HOST:     db
+      PG_PORT:     "5432"
+      PG_USER:     postgres
+      PG_PASSWORD: postgres
+      PG_DB_NAME:  moradores_de_rua
+    command: >
+      bash -c "
+        printenv | grep -E '^PG_' | sed 's/^/export /' >> /etc/environment &&
+        echo '0 6 * * 1 root php /var/www/html/cron/atualiza_cardapio.php >> /var/www/html/cron/logs/cardapio.log 2>&1' > /etc/cron.d/cardapio &&
+        chmod 0644 /etc/cron.d/cardapio &&
+        cron -f
+      "
+
   db:
     image: postgres:16-alpine
     container_name: moradores-db

@@ -140,11 +140,10 @@ require_once('includes/header.php');
             <span class="cat-label">Pessoas Desaparecidas</span>
         </a>
 
-        <span class="cat-btn cat-soon">
-            <span class="cat-badge">Em breve</span>
+        <a href="restaurantes.php" class="cat-btn cat-active">
             <span class="cat-icon">🍽️</span>
             <span class="cat-label">Restaurantes Populares</span>
-        </span>
+        </a>
 
         <span class="cat-btn cat-soon">
             <span class="cat-badge">Em breve</span>
