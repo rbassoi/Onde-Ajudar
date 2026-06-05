@@ -394,20 +394,30 @@ include 'includes/header.php';
         <div class="form-group">
             <label class="form-label">Foto do local <span class="text-muted text-sm">(opcional)</span></label>
             <input type="file" name="foto" id="inp-foto" accept="image/*" capture="environment" style="display:none">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-                <button type="button" id="btn-camera" class="btn btn-ghost" style="gap:6px">
-                    📷 Tirar foto
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <button type="button" id="btn-camera" class="btn btn-ghost" style="
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    gap:10px;padding:24px 12px;font-size:1rem;font-weight:600;
+                    border:2px dashed var(--line);border-radius:14px;min-height:100px;
+                ">
+                    <span style="font-size:2rem;line-height:1">📷</span>
+                    Tirar foto
                 </button>
-                <button type="button" id="btn-upload" class="btn btn-ghost" style="gap:6px;font-size:.85rem">
-                    📁 Escolher arquivo
+                <button type="button" id="btn-upload" class="btn btn-ghost" style="
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    gap:10px;padding:24px 12px;font-size:1rem;font-weight:600;
+                    border:2px dashed var(--line);border-radius:14px;min-height:100px;
+                ">
+                    <span style="font-size:2rem;line-height:1">📁</span>
+                    Galeria
                 </button>
             </div>
-            <div id="foto-preview" style="display:none;margin-top:10px;position:relative;width:fit-content">
-                <img id="foto-preview-img" src="" alt="Prévia" style="max-width:100%;max-height:200px;border-radius:8px;border:2px solid var(--line)">
+            <div id="foto-preview" style="display:none;margin-top:12px;position:relative;width:fit-content">
+                <img id="foto-preview-img" src="" alt="Prévia" style="max-width:100%;max-height:220px;border-radius:10px;border:2px solid var(--line)">
                 <button type="button" id="btn-remove-foto" title="Remover foto" style="
-                    position:absolute;top:-8px;right:-8px;background:var(--accent);color:#fff;
-                    border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;
-                    font-size:14px;line-height:24px;text-align:center;padding:0
+                    position:absolute;top:-10px;right:-10px;background:var(--accent);color:#fff;
+                    border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;
+                    font-size:16px;line-height:28px;text-align:center;padding:0
                 ">×</button>
             </div>
         </div>
