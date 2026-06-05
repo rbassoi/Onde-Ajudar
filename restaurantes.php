@@ -39,7 +39,7 @@ $restaurantes = $stmt->fetchAll();
 
 // Cardápio semanal — semana atual ou próxima disponível
 $cardapio_params = [];
-$cardapio_where  = ['data_cardapio >= CURRENT_DATE - INTERVAL \'7 days\'',
+$cardapio_where  = ['data_cardapio >= CURRENT_DATE',
                     'data_cardapio <= CURRENT_DATE + INTERVAL \'14 days\''];
 if ($fil_cidade) { $cardapio_where[] = 'cidade = :cidade'; $cardapio_params[':cidade'] = $fil_cidade; }
 if ($fil_estado) { $cardapio_where[] = 'estado = :estado'; $cardapio_params[':estado'] = $fil_estado; }
@@ -585,6 +585,8 @@ const _pins = <?= json_encode(array_values(array_filter(array_map(fn($r) => !$r[
     'id'      => $r['id'],
     'nome'    => $r['nome'],
     'endereco'=> $r['endereco'] . ($r['bairro'] ? ' — ' . $r['bairro'] : ''),
+    'cidade'  => $r['cidade'],
+    'estado'  => $r['estado'],
     'status'  => $r['status'],
     'lat'     => (float)$r['latitude'],
     'lng'     => (float)$r['longitude'],
@@ -685,7 +687,7 @@ function initRestMap() {
                 <div style="font-size:13px;line-height:1.9;border-top:1px solid #e8e2d8;padding-top:8px">
                     ${p.horarios.map(h => `<div>${escHtml(h)}</div>`).join('')}
                 </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}"
+                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.nome + ', ' + p.endereco + ', ' + p.cidade + ' - ' + p.estado + ', Brasil')}"
                    target="_blank" rel="noopener"
                    style="display:inline-block;margin-top:10px;font-size:12px;color:#cf6a44;text-decoration:underline">
                    🗺 Abrir no Google Maps →
