@@ -34,11 +34,13 @@ function nav_active(string $page): string {
 
 <nav class="app-navbar">
     <div class="inner">
-        <a href="<?= $base_path ?? '' ?>avistamentos.php#registrar" class="brand">
+        <a href="<?= $base_path ?? '' ?>home.php" class="brand">
             🤝 <span>Onde</span>&nbsp;Ajudar
         </a>
         <nav>
+            <a href="<?= $base_path ?? '' ?>home.php"           class="<?= nav_active('home') ?>">Início</a>
             <a href="<?= $base_path ?? '' ?>avistamentos.php"   class="<?= nav_active('avistamentos') ?>">Avistamentos</a>
+            <a href="<?= $base_path ?? '' ?>desaparecidos.php"  class="<?= nav_active('desaparecidos') ?>">Desaparecidos</a>
             <a href="<?= $base_path ?? '' ?>index.php"          class="<?= nav_active('index') ?>">Cadastro</a>
             <a href="<?= $base_path ?? '' ?>relatorio_idade.php" class="<?= nav_active('relatorio_idade') ?>">Relatórios</a>
             <?php if ($permissao == 1): ?>

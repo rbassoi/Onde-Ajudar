@@ -10,6 +10,7 @@ $scripts = [
     'migrate_avistamentos'   => 'banco/migrate_avistamentos.sql',
     'migrate_funcao'         => 'banco/migrate_funcao.sql',
     'migrate_foto'           => 'banco/migrate_foto_avistamento.sql',
+    'migrate_desaparecidos'  => 'banco/migrate_desaparecidos.sql',
     'seeds_cidades'          => 'banco/seeds_cidades_brasil.sql',
 ];
 

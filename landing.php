@@ -3,7 +3,7 @@ session_start();
 
 // Usuário já logado vai direto pro dashboard
 if (isset($_SESSION['id_usuario'])) {
-    header('Location: index.php');
+    header('Location: home.php');
     exit;
 }
 
