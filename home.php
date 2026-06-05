@@ -151,11 +151,10 @@ require_once('includes/header.php');
             <span class="cat-label">Acumuladores</span>
         </span>
 
-        <span class="cat-btn cat-soon">
-            <span class="cat-badge">Em breve</span>
+        <a href="animais_desaparecidos.php" class="cat-btn cat-active">
             <span class="cat-icon">🐾</span>
-            <span class="cat-label">Animais Perdidos</span>
-        </span>
+            <span class="cat-label">Animais Desaparecidos</span>
+        </a>
 
         <span class="cat-btn cat-soon">
             <span class="cat-badge">Em breve</span>
