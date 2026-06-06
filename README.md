@@ -1,35 +1,53 @@
-# Onde Ajudar — Sistema de Avistamentos e Gestão
+# Onde Ajudar — Plataforma de Cuidado Coletivo
 
-Sistema web/mobile de cuidado comunitário para registro e acompanhamento de pessoas em situação de rua. Qualquer cidadão pode registrar um avistamento rapidamente; autoridades e voluntários acompanham o feed, gerenciam cadastros e coordenam o atendimento.
+Sistema web/mobile de cuidado comunitário com múltiplos módulos de ajuda. Cidadãos, voluntários, ONGs e autoridades colaboram em um feed vivo da cidade — registrando avistamentos, buscando desaparecidos, localizando animais perdidos e encontrando restaurantes populares.
 
 ---
 
-## Funcionalidades
+## Módulos
 
-### Avistamentos (página principal)
+### 🏠 População em Situação de Rua
 
-- **Registro rápido** — Formulário acessível direto ao entrar no sistema ou clicar no logo "Onde Ajudar"
-- **Geolocalização automática** — Detecta a posição do usuário via browser e preenche Estado/Cidade/Bairro via Nominatim (reverse geocoding)
-- **Cascata de localização** — Seleção de Estado → Cidade (carregada via AJAX) → Bairro (datalist com sugestões do banco)
-- **Foto do avistamento** — Captura via câmera do dispositivo (`capture="environment"`) ou upload de arquivo
-- **Contador de pessoas** — Controle +/− com valor mínimo de 1
-- **Chips de necessidades** — Seleção visual de necessidades (alimentação, roupa, saúde etc.)
-- **Modal de confirmação de localização** — Se a posição do usuário não puder ser verificada, exibe alerta informando que falsa informação pode prejudicar as autoridades antes de salvar
-- **Feed de avistamentos** — Listagem com filtros por status (urgente / pendente / atendido) e localização (Estado / Cidade / Bairro)
-- **Mapa interativo** — Pins com cores por status, agrupados em clusters; alternância para mapa de calor; localização do usuário com pulsação animada e zoom automático para avistamentos próximos
+- **Registro rápido de avistamentos** — Formulário acessível com geolocalização automática via browser (reverse geocoding Nominatim)
+- **Cascata de localização** — Estado → Cidade (AJAX) → Bairro (datalist com sugestões do banco)
+- **Foto do avistamento** — Captura via câmera (`capture="environment"`) ou upload
+- **Contador de pessoas** — Controle +/− com mínimo de 1
+- **Chips de necessidades** — Seleção visual (alimentação, roupa, saúde etc.)
+- **Modal de confirmação de localização** — Alerta quando a posição não pode ser verificada
+- **Feed com filtros** — Por status (urgente / pendente / atendido) e localização
+- **Mapa interativo** — Pins coloridos por status, clusters, mapa de calor e localização do usuário com pulsação animada
+- **Cadastro completo** — Dados pessoais, documentos, histórico de abordagens, deficiências e upload de fotos/documentos
 
-### Cadastro de moradores
+### 🔍 Pessoas Desaparecidas
 
-- Dados pessoais, documentos, histórico criminal, deficiências e situação de rua
-- Upload de fotos e documentos
-- Histórico de abordagens
-- Busca por nome, RG, CPF, cidade ou perfil
+- Registro de desaparecidos com foto, descrição, último local e contato
+- Feed de casos com status **aberto** / **encontrado**
+- Busca e compartilhamento de alertas
+- Atualização de status pelo registrador ou por administradores
 
-### Sistema
+### 🍽️ Restaurantes Populares
 
-- **Relatórios** — Estatísticas por faixa etária
-- **Gestão de usuários** — Cadastro, edição, bloqueio e controle de perfis de acesso
-- **Setup de banco** — Página de administração para aplicar migrations e importar cidades brasileiras via browser
+- Listagem de restaurantes com refeições a preço acessível
+- Filtros por estado e cidade
+- Informações de cardápio, horários (café / almoço / jantar) e preços
+- Mapa com localização de cada restaurante (Leaflet)
+- Cardápio detalhado por refeição
+
+### 🐾 Animais Desaparecidos
+
+- Registro de animais perdidos ou encontrados com foto, espécie, raça, cor, porte e localização
+- Feed com status **perdido** / **encontrado** e recompensa opcional
+- Mapa com pins por localização do avistamento
+- Atualização de status ao reunir o animal com a família
+
+### 📊 Dashboard
+
+- **Cards de resumo** — Total de avistamentos, urgentes, pendentes, atendidos, desaparecidos em aberto, animais perdidos, restaurantes ativos e cadastros PSR
+- **Gráfico de linha** — Avistamentos diários nos últimos 30 dias
+- **Gráficos de donut** — Status de avistamentos, desaparecidos e animais
+- **Gráfico de barras** — Distribuição por faixa etária (PSR)
+- **Gráfico de rosca** — Distribuição por sexo (PSR)
+- **Tabelas recentes** — Últimos avistamentos e desaparecidos registrados
 
 ---
 
@@ -39,19 +57,19 @@ Sistema web/mobile de cuidado comunitário para registro e acompanhamento de pes
 
 | Perfil        | Acesso                                                           |
 |---------------|------------------------------------------------------------------|
-| Administrador | Total — gerencia usuários, cadastros, relatórios e configurações |
-| Comandante    | Operacional completo — cadastros, abordagens, relatórios         |
+| Administrador | Total — gerencia usuários, cadastros, dashboard e configurações  |
+| Comandante    | Operacional completo — cadastros, abordagens, dashboard          |
 | MP            | Ministério Público — visualização e relatórios                   |
 | Guarnição     | Registro de abordagens e avistamentos em campo                   |
 | Central       | Somente visualização e consultas                                  |
 
 ### Público geral
 
-| Perfil     | Acesso                                                                |
-|------------|-----------------------------------------------------------------------|
-| Cidadão    | Registra avistamentos, acompanha o feed e visualiza o mapa            |
-| Voluntário | Registra avistamentos e pode marcar casos como atendidos              |
-| ONG        | Organização parceira — visualiza, registra e atualiza status de casos |
+| Perfil     | Acesso                                                                     |
+|------------|----------------------------------------------------------------------------|
+| Cidadão    | Registra avistamentos e desaparecidos, acompanha o feed e visualiza o mapa |
+| Voluntário | Registra e pode marcar casos como atendidos em qualquer módulo             |
+| ONG        | Organização parceira — visualiza, registra e atualiza status de casos      |
 
 ---
 
@@ -61,7 +79,8 @@ Sistema web/mobile de cuidado comunitário para registro e acompanhamento de pes
 |-------------|--------------------------------------------------------------|
 | Backend     | PHP 8.2, PDO, procedural                                     |
 | Banco       | PostgreSQL 16                                                |
-| Frontend    | HTML5, CSS3, JavaScript (ES2020+), jQuery                    |
+| Frontend    | HTML5, CSS3, JavaScript (ES2020+)                            |
+| Gráficos    | Chart.js 4.4                                                 |
 | Mapas       | Leaflet 1.9, Leaflet.markercluster, Leaflet.heat             |
 | Geocoding   | Nominatim (OpenStreetMap) — reverse geocoding sem API key    |
 | Servidor    | Apache 2.4 (PHP 8.2 official Docker image)                   |
@@ -98,7 +117,7 @@ Sistema web/mobile de cuidado comunitário para registro e acompanhamento de pes
    ```
    http://localhost:8088/setup_cidades.php
    ```
-   Clique em **"Aplicar migrations e importar cidades"**. Isso adiciona a coluna `foto_avistamento` na tabela `abordagem` e popula a tabela `cidade` com ~185 cidades de todos os 27 estados.
+   Clique em **"Aplicar migrations e importar cidades"**. Isso cria as tabelas dos módulos novos e popula `cidade` com ~185 cidades de todos os 27 estados.
 
 5. Login padrão (criado pelo `seeds.sql`):
    - **Usuário:** `admin`
@@ -123,7 +142,18 @@ Sistema web/mobile de cuidado comunitário para registro e acompanhamento de pes
    psql -U postgres -d moradores_de_rua -f banco/seeds.sql
    ```
 
-2. Configure a conexão em [conexao.php](conexao.php):
+2. Aplique as migrations dos módulos adicionais:
+   ```bash
+   psql -U postgres -d moradores_de_rua -f banco/migrate_avistamentos.sql
+   psql -U postgres -d moradores_de_rua -f banco/migrate_desaparecidos.sql
+   psql -U postgres -d moradores_de_rua -f banco/migrate_animais_desaparecidos.sql
+   psql -U postgres -d moradores_de_rua -f banco/migrate_restaurantes.sql
+   psql -U postgres -d moradores_de_rua -f banco/migrate_restaurantes_latlng.sql
+   psql -U postgres -d moradores_de_rua -f banco/migrate_cardapio.sql
+   psql -U postgres -d moradores_de_rua -f banco/seeds_cidades_brasil.sql
+   ```
+
+3. Configure a conexão em `conexao.php`:
    ```php
    define('PG_HOST',     'localhost');
    define('PG_PORT',     '5432');
@@ -132,7 +162,7 @@ Sistema web/mobile de cuidado comunitário para registro e acompanhamento de pes
    define('PG_DB_NAME',  'moradores_de_rua');
    ```
 
-3. Acesse `http://localhost/onde-ajudar/login.php` e visite `setup_cidades.php` para aplicar as migrations.
+4. Acesse `http://localhost/onde-ajudar/login.php`.
 
 ---
 
@@ -140,45 +170,61 @@ Sistema web/mobile de cuidado comunitário para registro e acompanhamento de pes
 
 ### Páginas principais
 
-| Arquivo                   | Função                                                   |
-|---------------------------|----------------------------------------------------------|
-| `login.php`               | Autenticação                                             |
-| `avistamentos.php`        | **Página inicial** — Feed, Mapa e Registro de avistamentos |
-| `index.php`               | Cadastro de moradores — listagem e busca                 |
-| `ver_cadastro.php`        | Visualização completa do cadastro                        |
-| `cad_editar.php`          | Formulário de edição do cadastro                         |
-| `relatorio_idade.php`     | Relatório por faixa etária                               |
-| `usuarios_cadastro.php`   | Gestão de usuários do sistema                            |
-| `setup_cidades.php`       | Admin: aplica migrations e importa cidades               |
+| Arquivo                   | Módulo / Função                                              |
+|---------------------------|--------------------------------------------------------------|
+| `landing.php`             | Landing page pública — apresenta todos os módulos           |
+| `onboarding.php`          | Tela de boas-vindas mobile                                   |
+| `login.php`               | Autenticação                                                 |
+| `home.php`                | Hub central — escolha do módulo após login                   |
+| `avistamentos.php`        | PSR — Feed, mapa e registro de avistamentos                  |
+| `index.php`               | PSR — Listagem e busca de cadastros                          |
+| `ver_cadastro.php`        | PSR — Visualização completa do cadastro                      |
+| `cad_editar.php`          | PSR — Edição do cadastro                                     |
+| `desaparecidos.php`       | Pessoas desaparecidas — feed e registro                      |
+| `animais_desaparecidos.php` | Animais desaparecidos — feed, mapa e registro              |
+| `restaurantes.php`        | Restaurantes populares — listagem, mapa e cardápio           |
+| `dashboard.php`           | Dashboard — cards e gráficos de todos os módulos            |
+| `usuarios_cadastro.php`   | Gestão de usuários do sistema                                |
+| `setup_cidades.php`       | Admin: aplica migrations e importa cidades                   |
 
 ### Processadores (POST handlers)
 
-| Arquivo                        | Função                                               |
-|--------------------------------|------------------------------------------------------|
-| `avistamentos_processa.php`    | Registra avistamento e faz upload de foto            |
-| `busca_localidade.php`         | AJAX: retorna cidades por estado / bairros por cidade |
-| `login_valida.php`             | Valida login e redireciona para `avistamentos.php#registrar` |
-| `cad_processa.php`             | Processa cadastro de morador                         |
+| Arquivo                        | Função                                                |
+|--------------------------------|-------------------------------------------------------|
+| `avistamentos_processa.php`    | Registra avistamento e faz upload de foto             |
+| `desaparecidos_processa.php`   | Registra / atualiza pessoas desaparecidas             |
+| `animais_desaparecidos_processa.php` | Registra / atualiza animais desaparecidos       |
+| `admin_restaurantes_processa.php` | Cria e edita restaurantes populares               |
+| `busca_localidade.php`         | AJAX: cidades por estado / bairros por cidade         |
+| `login_valida.php`             | Valida login e redireciona                            |
+| `cad_processa.php`             | Processa cadastro de morador PSR                      |
 
 ### Frontend & Design
 
-| Caminho                | Conteúdo                                                       |
-|------------------------|----------------------------------------------------------------|
+| Caminho                | Conteúdo                                                         |
+|------------------------|------------------------------------------------------------------|
 | `estilos/css/app.css`  | Design system — tokens, componentes, clusters de mapa, animações |
-| `estilos/js/app.js`    | Tabs, chips, contador, mapa Leaflet (clusters + heatmap), filtros |
-| `includes/header.php`  | Navbar compartilhada — logo aponta para `avistamentos.php#registrar` |
-| `includes/footer.php`  | Rodapé e scripts compartilhados                                |
+| `estilos/js/app.js`    | Tabs, chips, contador, mapa Leaflet, filtros                     |
+| `includes/header.php`  | Navbar compartilhada com todos os módulos                        |
+| `includes/footer.php`  | Rodapé e scripts compartilhados                                  |
 
 ### Banco de dados
 
-| Caminho                              | Conteúdo                                          |
-|--------------------------------------|---------------------------------------------------|
-| `banco/schema.sql`                   | DDL completo (PostgreSQL)                         |
-| `banco/seeds.sql`                    | Dados de referência iniciais e usuário admin      |
-| `banco/migrate_avistamentos.sql`     | Adiciona colunas de avistamento na tabela abordagem |
-| `banco/migrate_funcao.sql`           | Adiciona coluna `funcao` na tabela usuarios       |
-| `banco/migrate_foto_avistamento.sql` | Adiciona coluna `foto_avistamento` em abordagem   |
-| `banco/seeds_cidades_brasil.sql`     | ~185 cidades de todos os 27 estados               |
+| Caminho                                  | Conteúdo                                              |
+|------------------------------------------|-------------------------------------------------------|
+| `banco/schema.sql`                       | DDL completo — tabelas base do sistema PSR            |
+| `banco/seeds.sql`                        | Dados de referência e usuário admin                   |
+| `banco/migrate_avistamentos.sql`         | Colunas de avistamento rápido na tabela `abordagem`   |
+| `banco/migrate_desaparecidos.sql`        | Tabela `desaparecidos`                                |
+| `banco/migrate_animais_desaparecidos.sql`| Tabela `animais_desaparecidos`                        |
+| `banco/migrate_restaurantes.sql`         | Tabela `restaurantes_populares`                       |
+| `banco/migrate_restaurantes_latlng.sql`  | Colunas de geolocalização em `restaurantes_populares` |
+| `banco/migrate_cardapio.sql`             | Tabela de cardápio dos restaurantes                   |
+| `banco/migrate_funcao.sql`               | Coluna `funcao` em `usuarios`                         |
+| `banco/migrate_foto_avistamento.sql`     | Coluna `foto_avistamento` em `abordagem`              |
+| `banco/seeds_cidades_brasil.sql`         | ~185 cidades de todos os 27 estados                   |
+| `banco/seeds_restaurantes_bh.sql`        | Restaurantes populares de Belo Horizonte              |
+| `banco/seeds_cardapio_bh_jun2026.sql`    | Cardápio dos restaurantes de BH                       |
 
 ---
 
@@ -186,38 +232,35 @@ Sistema web/mobile de cuidado comunitário para registro e acompanhamento de pes
 
 ### Tabelas principais
 
-| Tabela      | Descrição                                              |
-|-------------|--------------------------------------------------------|
-| `cadastro`  | Registro principal de cada morador                     |
-| `abordagem` | Avistamentos e abordagens (inclui lat/lng, foto, status) |
-| `usuarios`  | Contas do sistema                                      |
-| `arquivos`  | Arquivos binários (fotos/documentos do cadastro)       |
-| `cidade`    | Municípios brasileiros (~185 cidades pré-carregadas)   |
-| `estados`   | 27 estados brasileiros                                 |
-
-### Colunas adicionadas por migrations
-
-| Coluna                        | Tabela      | Tipo           | Descrição                              |
-|-------------------------------|-------------|----------------|----------------------------------------|
-| `latitude`, `longitude`       | `abordagem` | `DECIMAL(9,6)` | Coordenadas GPS do avistamento         |
-| `status_avistamento`          | `abordagem` | `VARCHAR`      | `urgente`, `pendente` ou `atendido`    |
-| `pessoas_count`               | `abordagem` | `INT`          | Número de pessoas avistadas            |
-| `necessidades`                | `abordagem` | `TEXT`         | Lista de necessidades (chips)          |
-| `contato_registrante`         | `abordagem` | `VARCHAR`      | Contato opcional de quem registrou     |
-| `relato`                      | `abordagem` | `TEXT`         | Descrição livre do avistamento         |
-| `cor`                         | `abordagem` | `VARCHAR`      | Identificação visual                   |
-| `foto_avistamento`            | `abordagem` | `VARCHAR(255)` | Caminho da foto tirada no registro     |
+| Tabela                   | Descrição                                                 |
+|--------------------------|-----------------------------------------------------------|
+| `cadastro`               | Registro principal de cada morador PSR                    |
+| `abordagem`              | Avistamentos e abordagens (lat/lng, foto, status)         |
+| `desaparecidos`          | Registro de pessoas desaparecidas                         |
+| `animais_desaparecidos`  | Registro de animais perdidos ou encontrados               |
+| `restaurantes_populares` | Restaurantes com refeições a preço popular                |
+| `usuarios`               | Contas do sistema                                         |
+| `arquivos`               | Arquivos binários (fotos/documentos do cadastro PSR)      |
+| `cidade`                 | Municípios brasileiros (~185 cidades pré-carregadas)      |
+| `estados`                | 27 estados brasileiros                                    |
 
 ---
 
 ## Fluxo do usuário
 
 ```
-Login → avistamentos.php#registrar (aba Registrar aberta)
-          │
-          ├─ Clica logo "Onde Ajudar" → volta para #registrar (sem reload)
-          ├─ Aba "Feed" → lista de avistamentos com filtros de status e localização
-          └─ Aba "Mapa" → mapa Leaflet com clusters, heatmap e localização do usuário
+Landing (landing.php)
+    │
+    ├─ Mobile → Onboarding (onboarding.php)
+    └─ Criar conta / Entrar → Login (login.php)
+                                    │
+                                    └─ Home (home.php) — escolha do módulo
+                                            │
+                                            ├─ 🏠 Avistamentos → avistamentos.php (feed / mapa / registro)
+                                            ├─ 🔍 Desaparecidos → desaparecidos.php
+                                            ├─ 🍽️ Restaurantes → restaurantes.php
+                                            ├─ 🐾 Animais → animais_desaparecidos.php
+                                            └─ (nav) Dashboard → dashboard.php
 ```
 
 ---
