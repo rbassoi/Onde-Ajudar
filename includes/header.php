@@ -43,7 +43,7 @@ function nav_active(string $page): string {
             <a href="<?= $base_path ?? '' ?>desaparecidos.php"  class="<?= nav_active('desaparecidos') ?>">Desaparecidos</a>
             <a href="<?= $base_path ?? '' ?>restaurantes.php"   class="<?= nav_active('restaurantes') ?>">Restaurantes</a>
             <a href="<?= $base_path ?? '' ?>index.php"          class="<?= nav_active('index') ?>">Cadastro</a>
-            <a href="<?= $base_path ?? '' ?>relatorio_idade.php" class="<?= nav_active('relatorio_idade') ?>">Relatórios</a>
+            <a href="<?= $base_path ?? '' ?>dashboard.php" class="<?= nav_active('dashboard') ?>">Dashboard</a>
             <?php if ($permissao == 1): ?>
             <a href="<?= $base_path ?? '' ?>usuarios_cadastro.php" class="<?= nav_active('usuarios_cadastro') ?>">Usuários</a>
             <?php endif; ?>

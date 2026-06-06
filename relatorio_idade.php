@@ -1,16 +1,7 @@
 <?php
 session_start();
-
-if (!isset($_SESSION['id_usuario'])) {
-    header('Location: login.php');
-    exit;
-}
-
-require_once('conexao.php');
-
-$page_title = 'Relatório por Idade — Moradores de Rua';
-include 'includes/header.php';
-?>
+header('Location: dashboard.php');
+exit;
 
 <div class="page-header">
     <div class="container">
