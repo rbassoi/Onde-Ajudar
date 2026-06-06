@@ -20,7 +20,7 @@ if ($is_mobile && !isset($_GET['web'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Onde Ajudar — Juntos por quem está na rua</title>
+    <title>Onde Ajudar — Plataforma de cuidado coletivo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -214,12 +214,12 @@ if ($is_mobile && !isset($_GET['web'])) {
 <!-- ── Hero ───────────────────────────────────────────────── -->
 <section class="hero">
     <div class="hero-inner">
-        <div class="hero-kicker">❤ Cuidado coletivo</div>
-        <h1>Juntos por quem<br>está <em>na rua</em></h1>
-        <p>Viu alguém precisando de ajuda? Em poucos toques você registra um avistamento, o feed da comunidade se mobiliza e a ajuda chega mais rápido.</p>
+        <div class="hero-kicker">🤝 Plataforma de cuidado coletivo</div>
+        <h1>Um lugar só para<br>quem quer <em>ajudar</em></h1>
+        <p>Avistamentos de pessoas em situação de rua, desaparecidos, animais perdidos e restaurantes populares — tudo em um feed vivo da sua cidade, mobilizando quem pode agir.</p>
         <div class="hero-ctas">
-            <a href="registro.php"     class="btn btn-primary btn-lg">Criar minha conta →</a>
-            <a href="avistamentos.php" class="btn btn-ghost btn-lg">📍 Registrar avistamento</a>
+            <a href="registro.php" class="btn btn-primary btn-lg">Criar minha conta →</a>
+            <a href="login.php"    class="btn btn-ghost btn-lg">Entrar na plataforma</a>
         </div>
         <p style="margin-top:14px;font-size:13px;color:var(--muted)">
             Já tem conta? <a href="login.php">Entrar</a>
@@ -229,46 +229,46 @@ if ($is_mobile && !isset($_GET['web'])) {
 
 <!-- ── Stats ──────────────────────────────────────────────── -->
 <div class="stats-bar">
-    <div class="stat"><div class="num">3</div><div class="lbl">toques para registrar</div></div>
+    <div class="stat"><div class="num">4</div><div class="lbl">módulos ativos</div></div>
     <div class="stat"><div class="num">🗺</div><div class="lbl">mapa em tempo real</div></div>
     <div class="stat"><div class="num">🤝</div><div class="lbl">rede de cuidado</div></div>
-    <div class="stat"><div class="num">❤</div><div class="lbl">cada pessoa importa</div></div>
+    <div class="stat"><div class="num">❤</div><div class="lbl">cada vida importa</div></div>
 </div>
 
 <!-- ── Features ───────────────────────────────────────────── -->
 <div class="section">
-    <h2 class="section-title">Tudo que você precisa para ajudar</h2>
-    <p class="section-sub">Simples para quem está na rua. Completo para quem coordena.</p>
+    <h2 class="section-title">Quatro módulos, uma só plataforma</h2>
+    <p class="section-sub">Cada situação tem seu espaço. Registre, acompanhe e mobilize a comunidade.</p>
     <div class="features-grid">
         <div class="feat-card">
-            <div class="feat-icon">📍</div>
-            <h3>Avistamentos no mapa</h3>
-            <p>Visualize em tempo real onde as pessoas estão, identifique concentrações e veja o histórico de cuidados em cada ponto.</p>
+            <div class="feat-icon">🏠</div>
+            <h3>População em Situação de Rua</h3>
+            <p>Registre avistamentos com localização, veja o mapa em tempo real, acompanhe o histórico de cuidados e encaminhe para Centro POP, albergues e saúde.</p>
         </div>
         <div class="feat-card">
-            <div class="feat-icon">📋</div>
-            <h3>Feed da comunidade</h3>
-            <p>Acompanhe os casos abertos, filtre por urgência, marque como atendido. Transparência para toda a rede de cuidado.</p>
+            <div class="feat-icon">🔍</div>
+            <h3>Pessoas Desaparecidas</h3>
+            <p>Cadastre ou busque pessoas desaparecidas, compartilhe o alerta na rede, registre avistamentos e marque quando a pessoa for encontrada.</p>
         </div>
         <div class="feat-card">
-            <div class="feat-icon">⚡</div>
-            <h3>Registro em 3 toques</h3>
-            <p>Local, quantas pessoas, o que precisam. Pronto. A rede é notificada e quem pode ajudar já sabe onde ir.</p>
+            <div class="feat-icon">🍽️</div>
+            <h3>Restaurantes Populares</h3>
+            <p>Encontre restaurantes com refeições a preço popular na sua cidade, veja cardápios, horários e localização no mapa — ideal para quem coordena distribuição de alimentos.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon">🐾</div>
+            <h3>Animais Desaparecidos</h3>
+            <p>Registre animais perdidos ou encontrados com foto e localização, divulgue na comunidade e ajude a reunir pets com suas famílias.</p>
         </div>
         <div class="feat-card">
             <div class="feat-icon">📊</div>
             <h3>Dados que orientam</h3>
-            <p>Relatórios por faixa etária, frequência de casos, encaminhamentos realizados. Informação para políticas de cuidado.</p>
-        </div>
-        <div class="feat-card">
-            <div class="feat-icon">🏥</div>
-            <h3>Encaminhamentos</h3>
-            <p>Registre encaminhamentos para Centro POP, CAPS, albergues, saúde e outros serviços. Histórico completo de cada pessoa.</p>
+            <p>Relatórios por módulo, faixa etária, frequência de casos e encaminhamentos realizados. Informação para políticas de cuidado.</p>
         </div>
         <div class="feat-card">
             <div class="feat-icon">🔒</div>
             <h3>Privacidade e ética</h3>
-            <p>Dados sensíveis protegidos. Acesso por perfil. Cada pessoa é tratada com dignidade, não como número.</p>
+            <p>Dados sensíveis protegidos. Acesso por perfil de usuário. Cada pessoa e animal é tratado com dignidade, não como número.</p>
         </div>
     </div>
 </div>
@@ -277,22 +277,22 @@ if ($is_mobile && !isset($_GET['web'])) {
 <div class="steps-section" id="como-funciona">
     <div class="steps-inner">
         <h2 class="section-title">Como funciona</h2>
-        <p class="section-sub" style="margin-bottom:48px">Três passos. Qualquer pessoa pode ajudar.</p>
+        <p class="section-sub" style="margin-bottom:48px">Três passos. Qualquer pessoa pode ajudar, em qualquer módulo.</p>
         <div class="steps">
             <div class="step">
                 <div class="step-num">1</div>
-                <h3>Você vê</h3>
-                <p>Encontrou alguém nas ruas precisando de ajuda. Abre o app ou o site.</p>
+                <h3>Você identifica</h3>
+                <p>Viu alguém precisando de ajuda, um animal perdido, um desaparecido ou um restaurante popular? Acesse o módulo certo.</p>
             </div>
             <div class="step">
                 <div class="step-num">2</div>
                 <h3>Você registra</h3>
-                <p>Local, número de pessoas e o que precisam. 3 toques e o avistamento está no feed.</p>
+                <p>Preencha as informações básicas — localização, foto, descrição. Em poucos toques o registro está no feed da comunidade.</p>
             </div>
             <div class="step">
                 <div class="step-num">3</div>
                 <h3>A rede age</h3>
-                <p>Voluntários, ONGs e assistência social veem o caso e se mobilizam para ajudar.</p>
+                <p>Voluntários, ONGs, assistência social e outros usuários veem o caso e se mobilizam para ajudar.</p>
             </div>
         </div>
     </div>
@@ -301,48 +301,48 @@ if ($is_mobile && !isset($_GET['web'])) {
 <!-- ── Who it's for ───────────────────────────────────────── -->
 <div class="section" id="quem-usa">
     <h2 class="section-title">Para quem é</h2>
-    <p class="section-sub">Qualquer pessoa que queira fazer a diferença</p>
+    <p class="section-sub">Qualquer pessoa que queira fazer a diferença — em qualquer causa</p>
     <div class="profiles-grid">
         <div class="profile-card">
             <div class="emoji">🚶</div>
             <h4>Cidadão</h4>
-            <p>Viu, registrou. Simples assim. Sem burocracia.</p>
+            <p>Viu algo, registrou. Simples assim. Seja um avistamento, um animal perdido ou um desaparecido.</p>
         </div>
         <div class="profile-card">
             <div class="emoji">🤝</div>
             <h4>Voluntário</h4>
-            <p>Acompanha o feed, vai até o local, marca como atendido.</p>
+            <p>Acompanha o feed da sua cidade, vai até o local e marca o caso como atendido.</p>
         </div>
         <div class="profile-card">
             <div class="emoji">🏢</div>
             <h4>ONG / Organização</h4>
-            <p>Coordena equipes, visualiza o mapa, registra encaminhamentos.</p>
+            <p>Coordena equipes, visualiza o mapa por módulo e registra encaminhamentos com histórico completo.</p>
         </div>
         <div class="profile-card">
             <div class="emoji">🏥</div>
             <h4>Assistência Social</h4>
-            <p>Acessa histórico completo, gera relatórios, acompanha casos.</p>
+            <p>Acessa histórico de cada pessoa, gera relatórios e acompanha casos entre serviços.</p>
         </div>
         <div class="profile-card">
             <div class="emoji">🛡</div>
             <h4>Autoridades</h4>
-            <p>Visão geral da cidade, dados para políticas públicas de cuidado.</p>
+            <p>Visão geral da cidade por módulo — dados para políticas públicas e distribuição de recursos.</p>
         </div>
         <div class="profile-card">
             <div class="emoji">❤</div>
             <h4>Você</h4>
-            <p>Qualquer pessoa com vontade de ajudar é bem-vinda.</p>
+            <p>Qualquer pessoa com vontade de ajudar, seja qual for a causa, é bem-vinda aqui.</p>
         </div>
     </div>
 </div>
 
 <!-- ── CTA final ──────────────────────────────────────────── -->
 <div class="cta-strip">
-    <h2>Cada pessoa conta.<br>Comece agora.</h2>
-    <p>Não precisa de cadastro para registrar um avistamento.</p>
+    <h2>Cada vida conta.<br>Comece agora.</h2>
+    <p>Crie sua conta e acesse todos os módulos da plataforma gratuitamente.</p>
     <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-        <a href="registro.php"     class="btn btn-primary btn-lg">Criar minha conta</a>
-        <a href="avistamentos.php" class="btn btn-ghost    btn-lg">📍 Avistamentos</a>
+        <a href="registro.php" class="btn btn-primary btn-lg">Criar minha conta</a>
+        <a href="login.php"    class="btn btn-ghost    btn-lg">Entrar na plataforma</a>
     </div>
     <p style="margin-top:14px;font-size:14px;color:rgba(247,242,233,.6)">
         Já tem conta? <a href="login.php" style="color:rgba(247,242,233,.85)">Entrar</a>
@@ -352,7 +352,7 @@ if ($is_mobile && !isset($_GET['web'])) {
 <!-- ── Footer ─────────────────────────────────────────────── -->
 <footer>
     <p style="margin-bottom:6px">
-        🤝 <strong>Onde Ajudar</strong> — Juntos por quem está na rua
+        🤝 <strong>Onde Ajudar</strong> — Plataforma de cuidado coletivo
     </p>
     <p>
         <a href="landing.php?web=1">Versão web</a> ·
